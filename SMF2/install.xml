@@ -1,0 +1,397 @@
+<?xml version="1.0"?>
+<!--
+ * Spam Blocker was developed for SMF forums c/o Underdog @ http://askusaquestion.net	
+ * Copyright 2013 Underdog@askusaquestion.net
+ * This software package is distributed under the terms of its Freeware License
+ * http://askusaquestion.net/index.php/page=spamblocker_license
+-->
+
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<id>underdog:spamblocker</id>
+	<name>Spam Blocker</name>
+	<version>1.0</version>
+	<file name="$sourcedir/Post.php">
+		<operation>
+			<search position="before"><![CDATA[	// Check the subject and message.]]></search>
+			<add><![CDATA[
+	if (isset($_REQUEST['message']) && (!empty($modSettings['spamBlocker_PostFilter']) ? (int)$modSettings['spamBlocker_PostFilter'] : 2) == 1)
+	{
+		require_once($sourcedir . '/Subs-SpamBlocker.php');
+		$txt['error_spamBlocker_postLowChars'] = str_replace('%#&$@', (!empty($modSettings['spamBlocker_charsLowCount']) ? (int)$modSettings['spamBlocker_charsLowCount'] : 1), $txt['error_spamBlocker_postLowChars']);
+		$txt['error_spamBlocker_postChars'] = str_replace('%#&$@', (!empty($modSettings['spamBlocker_charsCount']) ? (int)$modSettings['spamBlocker_charsCount'] : 60), $txt['error_spamBlocker_postChars']);
+		$spamCheck = spamBlockerPostFilter($smcFunc['htmlspecialchars']($_REQUEST['message'], ENT_QUOTES));
+		
+		if ((int)$spamCheck['words'] >= (!empty($modSettings['spamBlocker_wordCount']) ? (int)$modSettings['spamBlocker_wordCount'] : 1))
+			$post_errors[] = 'spamBlocker_postText';
+			
+		if ($spamCheck['links'])
+			$post_errors[] = 'spamBlocker_postLinks';
+			
+		if ($spamCheck['images'])
+			$post_errors[] = 'spamBlocker_postImages';
+			
+		if ($spamCheck['low_chars'])
+			$post_errors[] = 'spamBlocker_postLowChars';	
+		
+		if ($spamCheck['chars'])
+			$post_errors[] = 'spamBlocker_postChars';
+			
+	}]]></add>
+		</operation>
+	</file>	
+	<file name="$sourcedir/Subs-Members.php">
+		<operation>
+			<search position="before"><![CDATA[	// Okay, they're for sure registered... make sure the session is aware of this for security. (Just married :P!)
+	$_SESSION['just_registered'] = 1;]]></search>
+			<add><![CDATA[
+			
+	if (!empty($regOptions['spamBlocker']))
+	{
+		$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}ban_items SET id_member = {int:memberid} WHERE id_ban_group = {int:key}", array('memberid' => (int)$memberID, 'key' => (int)$regOptions['spamBlocker']));
+		$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}spamblocker_blacklist SET id_member = {int:memberid} WHERE id_ban_group = {int:key}", array('memberid' => (int)$memberID, 'key' => (int)$regOptions['spamBlocker']));
+	}]]></add>
+		</operation>
+	</file>
+	<file name="$sourcedir/Errors.php">
+		<operation>
+			<search position="before"><![CDATA[	// Check if error logging is actually on.
+	if (empty($modSettings['enableErrorLogging']))
+		return $error_message;]]></search>
+			<add><![CDATA[
+	
+	$check_SB_error = !empty($modSettings['spamBlocker_smfError']) ? $modSettings['spamBlocker_smfError'] : 1;	 
+	if ((isset($_SESSION['ban']['cannot_access']) || isset($_SESSION['ban']['cannot_post']) || isset($_SESSION['ban']['cannot_login'])) && $error_type == 'user' && $check_SB_error == 2)
+		return $error_message;]]></add>
+		</operation>
+	</file>
+		<file name="$sourcedir/Subs-Post.php">
+		<operation>
+			<search position="before"><![CDATA[		// One new post has been added today.
+		trackStats(array('posts' => '+'));]]></search>
+			<add><![CDATA[
+				
+		call_integration_hook('integrate_create_reply', array($msgOptions, $topicOptions, $posterOptions));]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[	// Now we have the differences make the changes, first the easy one.
+	$smcFunc['db_query']('', '
+		UPDATE {db_prefix}messages
+		SET approved = {int:approved_state}]]></search>
+			<add><![CDATA[, spamblocker = {int:spam_blocker}]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[			'approved_state' => $approve ? 1 : 0,]]></search>
+			<add><![CDATA[
+			'spam_blocker' => 0,]]></add>
+		</operation>
+	</file>
+	<file name="$sourcedir/Subs-Members.php">
+		<operation>
+			<search position="before"><![CDATA[	// If you don't exist we can't ban you.]]></search>
+			<add><![CDATA[
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}spamblocker_blacklist
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'users' => $users,
+		)
+	);]]></add>
+		</operation>		
+		<operation>
+			<search position="before"><![CDATA[function list_getMembers($start, $items_per_page, $sort, $where, $where_params = array(), $get_duplicates = false)
+{
+	global $smcFunc;]]></search>
+			<add><![CDATA[
+	global $modSettings;
+	
+	/* Hide blacklisted members from view? */
+	if ((!empty($modSettings['spamBlocker_hideMembers']) ? $modSettings['spamBlocker_hideMembers'] : 2) == 2)
+		$where .= ' AND sb.id_member IS NULL';]]></add>
+		</operation>		
+		<operation>
+			<search position="replace"><![CDATA[			LEFT JOIN {db_prefix}membergroups AS mg ON (mg.id_group = mem.id_group)]]></search>
+			<add><![CDATA[			LEFT JOIN {db_prefix}membergroups AS mg ON (mg.id_group = mem.id_group)
+			LEFT JOIN {db_prefix}spamblocker_blacklist AS sb ON (sb.id_member = mem.id_member)]]></add>
+		</operation>				
+	</file>
+	<file name="$sourcedir/ManageBans.php">
+		<operation>
+			<search position="before"><![CDATA[		// Unban them all!]]></search>
+			<add><![CDATA[
+		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}spamblocker_blacklist
+			WHERE id_ban_group IN ({array_int:ban_list})',
+			array(
+				'ban_list' => $_POST['remove'],
+			)
+		);]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[				bi.id_ban, bi.hostname, bi.email_address, bi.id_member, bi.hits,]]></search>
+			<add><![CDATA[ sb.reference,]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[			WHERE bg.id_ban_group = {int:current_ban}',]]></search>
+			<add><![CDATA[				LEFT JOIN {db_prefix}spamblocker_blacklist AS sb ON (sb.id_ban_group = bg.id_ban_group)
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[					'notes' => $row['notes'],]]></search>
+			<add><![CDATA[
+					'reference' => $row['reference'],]]></add>
+		</operation>
+	</file>
+	<file name="$themedir/ManageBans.template.php">
+		<operation>
+			<search position="replace"><![CDATA[						<dd>
+							<textarea name="notes" cols="44" rows="3">', $context['ban']['notes'], '</textarea>
+						</dd>]]></search>
+			<add><![CDATA[						<dd>';
+	if (!empty($context['ban']['reference']))					
+		echo '						
+							<textarea disabled=true name="notes" cols="44" rows="3">', $context['ban']['notes'], '</textarea>';
+	else
+		echo '						
+							<textarea name="notes" cols="44" rows="3">', $context['ban']['notes'], '</textarea>';
+	echo '						
+						</dd>]]></add>
+		</operation>	
+	</file>	
+	<file name="$sourcedir/PostModeration.php">
+		<operation>
+			<search position="before"><![CDATA[	// Probably need this...
+	require_once($sourcedir . '/ModerationCenter.php');]]></search>
+			<add><![CDATA[
+	require_once($sourcedir . '/Subs-SpamBlocker.php');]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[		'topics' => 'UnapprovedPosts',]]></search>
+			<add><![CDATA[
+		'report_spam' => 'UnapprovedPosts']]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[	// Just a deletion?
+	elseif (isset($_GET['delete']))
+		$toAction[] = (int) $_GET['delete'];]]></search>
+			<add><![CDATA[
+	// Report a post as spam?
+	elseif (isset($_GET['report_spam']))
+		$toAction[] = (int) $_GET['report_spam'];]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[	// Right, so we have something to do?]]></search>
+			<add><![CDATA[	/* Are we reporting spam? */			
+	elseif (isset($_GET['report_spam']) || (isset($_POST['do']) && $_POST['do'] == 'report_spam'))
+		$curAction = 'report_spam';
+
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[		$toAction = array();
+		$details = array();]]></search>
+			<add><![CDATA[	
+		$spamPost = array();]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[			// Delete requires more permission checks...]]></search>
+			<add><![CDATA[			elseif ($curAction == 'report_spam' && allowedTo('spamblocker_settings'))
+			{
+				checkSession('request');
+				$spam_array = array('id_msg', 'id_member', 'id_board', 'subject', 'id_topic', 'id_first_msg', 'id_member_started');
+				foreach ($spam_array as $spam)
+					$spamPost[$spam] = $row[$spam];
+				
+				$can_add = true;	
+			}
+]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[		// If we have anything left we can actually do the approving (etc).
+		if (!empty($toAction))]]></search>
+			<add><![CDATA[		/* If there was a reported post, send it to Akismet and/or SFS */ 
+		if (!empty($spamPost))
+			spamBlockerReport($spamPost);
+		// If we have anything left we can actually do the approving (etc).
+		elseif (!empty($toAction))
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[	// Get all unapproved posts.
+	$request = $smcFunc['db_query']('', '
+		SELECT m.id_msg, m.id_topic, m.id_board, m.subject, m.body, m.id_member,]]></search>
+			<add><![CDATA[ m.spamblocker, mem.posts, mem.id_group,]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[			'can_delete' => $can_delete,]]></search>
+			<add><![CDATA[
+			'can_report_spamblocker' => allowedTo('spamblocker_settings'),
+			'reported_spamblocker' => spamBlockerDefinition($row['spamblocker']),
+			'posts_spamblocker' => $row['posts'],
+			'group_spamblocker' => $row['id_group'],]]></add>
+		</operation>
+	</file>
+	<file name="$themedir/ModerationCenter.template.php">
+		<operation>
+			<search position="before"><![CDATA[// Show a list of all the unapproved posts
+function template_unapproved_posts()
+{
+	global $settings, $options, $context, $txt, $scripturl]]></search>
+			<add><![CDATA[, $modSettings]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[	// Make up some buttons]]></search>
+			<add><![CDATA[	/* Spamblocker - changing link for opting out of confirmation */
+	echo '
+		<script type="text/javascript"><!-- // --><![', 'CDATA', '[
+			var spamblocker_NoLink = ', json_encode(iconv($context['character_set'], 'UTF-8', $scripturl . '?action=moderate;area=postmod;sa=' . $context['current_view'] . ';start=' . $context['start'] . ';')),'
+			function getDetails(spamBlocker, messageID)
+			{				
+				if (confirm(spamBlocker))
+					return true;
+				else
+				{					
+					var link = document.getElementById("spamLink_" + messageID).attributes;
+					link.getNamedItem("href").value = spamblocker_NoLink;
+				}			
+			}
+		// ', ']', ']></script>';
+]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[				<span class="floatright">
+					<a href="', $scripturl, '?action=moderate;area=postmod;sa=', $context['current_view'], ';start=', $context['start'], ';', $context['session_var'], '=', $context['session_id'], ';approve=', $item['id'], '">', $approve_button, '</a>';]]></search>
+			<add><![CDATA[				<span class="floatright">';
+			
+			/* Show the spamblocker link that navigates the appropriate action? */			
+			$maxPostcount = !empty($modSettings['spamBlocker_postCount']) ? $modSettings['spamBlocker_postCount'] : 0;
+			$postAkismet = !empty($modSettings['spamBlocker_akismetPost']) ? $modSettings['spamBlocker_akismetPost'] : 2;
+			$postSFS = !empty($modSettings['spamBlocker_PostSFS']) ? $modSettings['spamBlocker_PostSFS'] : 2;
+			$enableSB = !empty($modSettings['spamBlocker_enable']) ? $modSettings['spamBlocker_enable'] : 2;	
+			if (empty($maxPostcount))
+				$item['posts_spamblocker'] = -1;
+			if ($postAkismet + $postSFS < 4 && $enableSB == 1 && $item['can_report_spamblocker'] && $item['group_spamblocker'] != 1 && $item['posts_spamblocker'] < $maxPostcount)
+			{
+				$link = $scripturl . '?action=moderate;area=postmod;sa=' . $context['current_view'] . ';start=' . $context['start'] . ';' . $context['session_var'] . '=' . $context['session_id'] . ';report_spam=' . $item['id'];
+				if ($item['reported_spamblocker']['disabled'] == 'disabled')
+					$link = $scripturl . '?action=moderate;area=postmod;sa=' . $context['current_view'] . ';start=' . $context['start'] . ';';
+				
+				echo '				                                
+					<a id="spamLink_' . $item['id'] . '" onclick="getDetails(\'',$item['reported_spamblocker']['detail'],'\', \'',$item['id'],'\');" href="' . $link . '" style="text-decoration:none;">
+						<img id="spamImage_' . $item['id'] . '" alt="#" src="' . $settings['default_theme_url'] . '/images/admin/spamBlocker-reported_spam.gif" title="' . $item['reported_spamblocker']['title'] . '" style="position:relative;border=0px;vertical-align:middle;right:5px;" />
+					</a>';
+			}
+			
+			echo '	
+					<a href="', $scripturl, '?action=moderate;area=postmod;sa=', $context['current_view'], ';start=', $context['start'], ';', $context['session_var'], '=', $context['session_id'], ';approve=', $item['id'], '">', $approve_button, '</a>';]]></add>
+		</operation>		
+	</file>
+		<file name="$themedir/Display.template.php">
+		<operation>
+			<search position="before"><![CDATA[		// If this is the first post, (#0) just say when it was posted - otherwise give the reply #.
+		if ($message['can_approve'] || $context['can_reply']]]></search>
+			<add><![CDATA[ || $message['can_report_spamblocker']]]></add>
+		</operation>	
+		<operation>
+			<search position="after"><![CDATA[		// Show a checkbox for quick moderation?]]></search>
+			<add><![CDATA[		/* Show the spamblocker link that navigates the appropriate action? */		
+		$displayEnable = !empty($modSettings['spamBlocker_PostDisplay']) ? $modSettings['spamBlocker_PostDisplay'] : 2;
+		$maxPostcount = !empty($modSettings['spamBlocker_postCount']) ? $modSettings['spamBlocker_postCount'] : 0;
+		$postAkismet = !empty($modSettings['spamBlocker_akismetPost']) ? $modSettings['spamBlocker_akismetPost'] : 2;
+		$postSFS = !empty($modSettings['spamBlocker_PostSFS']) ? $modSettings['spamBlocker_PostSFS'] : 2;
+		$enableSB = !empty($modSettings['spamBlocker_enable']) ? $modSettings['spamBlocker_enable'] : 2;
+		$_SESSION['spamBlocker_PostCheck'] = false;
+		if (empty($maxPostcount))
+			$message['posts_spamblocker'] = -1;		
+		if ($postAkismet + $postSFS < 4 && $enableSB == 1 && $message['can_report_spamblocker'] && $displayEnable == 1 && $message['group_spamblocker'] != 1 && $message['posts_spamblocker'] < $maxPostcount)
+		{
+			$_SESSION['spamBlocker_PostCheck'] = 'spamBlockerPostCheck';
+			$link = $scripturl . '?action=SpamBlockerReport;topic=' . $context['current_topic'] . ';report_spam=' . $message['id'] . ';' . $context['session_var'] . '=' . $context['session_id'];
+			if ($message['reported_spamblocker']['disabled'] == 'disabled')
+				$link = $scripturl . '?topic=' . $context['current_topic'] . '.msg' . $context['start'] . '#msg' . $message['id'];
+				
+			echo '				                                
+									<li class="inline_mod_check" style="margin-left:-4px;position:relative;">
+										<a id="spamLink_' . $message['id'] . '" onclick="getDetails(\'',$message['reported_spamblocker']['detail'],'\', \'',$message['id'],'\');" href="' . $link . '" style="text-decoration:none;float:right;position:relative;">
+											<img id="spamImage_' . $message['id'] . '" alt="#" src="' . $settings['default_theme_url'] . '/images/admin/spamBlocker-reported_spam.gif" title="' . $message['reported_spamblocker']['title'] . '" style="position:relative;border=0px;vertical-align:middle;right:5px;" />
+										</a>
+									</li>';
+		}
+		
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[		if ($message['can_approve'] || $context['can_reply'] || $message['can_modify']]]></search>
+			<add><![CDATA[ || $message['can_report_spamblocker']]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[function template_main()
+{
+	global $context, $settings, $options, $txt, $scripturl, $modSettings;]]></search>
+			<add><![CDATA[	
+	
+	/* Spamblocker - changing link for opting out of confirmation */
+	echo '
+	<script type="text/javascript"><!-- // --><![', 'CDATA', '[		
+		function getDetails(spamBlocker, messageID)
+		{
+			var spamblocker_NoLink = ', json_encode(iconv($context['character_set'], 'UTF-8', $scripturl . '?topic='. $context['current_topic'])),' + ".msg" + messageID + "#msg" + messageID;
+			if (confirm(spamBlocker))
+				return true;
+			else
+			{					
+				var link = document.getElementById("spamLink_" + messageID).attributes;
+				link.getNamedItem("href").value = spamblocker_NoLink;
+			}			
+		}
+	// ', ']', ']></script>';]]></add>
+		</operation>
+		</file>		
+	<file name="$sourcedir/Display.php">
+		<operation>
+			<search position="before"><![CDATA[	global $memberContext, $context, $messages_request, $topic, $attachments, $topicinfo;]]></search>
+			<add><![CDATA[
+	global $sourcedir;
+
+	require_once($sourcedir . '/Subs-SpamBlocker.php');]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[	// Run BBC interpreter on the message.
+	$message['body'] = parse_bbc($message['body'], $message['smileys_enabled'], $message['id_msg']);]]></search>
+			<add><![CDATA[	
+	
+	// Get the necessary spamblocker integer and the posters amount of posts
+	$message['spamblocker'] = 0;
+	$message['spamblocker_posts'] = 0;
+	$message['spamblocker_group'] = 0;
+	if (allowedTo('spamblocker_settings'))
+	{
+		$request = $smcFunc['db_query']('', '
+			SELECT posting.id_msg, posting.id_member, posting.spamblocker, member.posts, member.id_group
+			FROM {db_prefix}messages AS posting
+			LEFT JOIN {db_prefix}members AS member ON (member.id_member = posting.id_member)
+			WHERE posting.id_msg = {int:current_msg}		
+			LIMIT 1',
+			array('current_msg' => $message['id_msg'],
+			)
+		);	
+		while ($row = $smcFunc['db_fetch_assoc']($request))
+		{
+			$message['spamblocker_posts'] = $row['posts'];
+			$message['spamblocker_group'] = $row['id_group'];
+			$message['spamblocker'] = $row['spamblocker'];
+		}
+	
+		$smcFunc['db_free_result']($request);
+	}]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[		'can_see_ip' => allowedTo('moderate_forum') || ($message['id_member'] == $user_info['id'] && !empty($user_info['id'])),]]></search>
+			<add><![CDATA[
+		'can_report_spamblocker' => allowedTo('spamblocker_settings'),
+		'reported_spamblocker' => spamBlockerDefinition($message['spamblocker']),
+		'posts_spamblocker' => $message['spamblocker_posts'],
+		'group_spamblocker' => $message['spamblocker_group'],]]></add>
+		</operation>
+	</file>
+</modification>

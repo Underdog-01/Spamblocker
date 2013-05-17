@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<!--
+ * Developed for SMF forums c/o Underdog @ http://askusaquestion.net	
+ * Copyright 2013 Underdog@askusaquestion.net
+ * This software package is distributed under the terms of its Freeware License
+ * http://askusaquestion.net/index.php/page=spamblocker_license
+-->
+<!DOCTYPE package-info SYSTEM "http://www.simplemachines.org/xml/package-info">
+<package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
+	<id>underdog:spamblocker</id>
+	<name>Spam Blocker</name>
+	<version>1.0</version>
+	<type>modification</type>
+		
+		<!-- ####################      SMF2.0X        #################### -->
+				
+	<install for="2.0 - 2.99.99">
+		<readme parsebbc="true">SMF2/readme_spamblocker.txt</readme>
+		<modification format="xml" type="file">SMF2/install.xml</modification>	
+		<require-file name="SMF2/SpamBlocker.php" destination="$sourcedir" />
+		<require-file name="SMF2/Subs-SpamBlocker.php" destination="$sourcedir" />		
+		<require-file name="SMF2/SpamBlockerAdmin.php" destination="$sourcedir" />
+		<require-file name="SMF2/Subs-SpamBlockerAdmin.php" destination="$sourcedir" />
+		<require-file name="SMF2/SpamBlockerHooks.php" destination="$sourcedir" />
+		<require-file name="SMF2/SpamBlockerAkismet.php" destination="$sourcedir" />
+		<require-file name="SMF2/SpamBlockerAdmin.template.php" destination="$boarddir/Themes/default" />	
+		<require-file name="SMF2/scripts/spamblocker-pages.js" destination="$boarddir/Themes/default/scripts" />		
+		<require-file name="SMF2/SpamBlockerWhitelist.template.php" destination="$boarddir/Themes/default" />
+		<require-file name="SMF2/SpamBlockerBlacklist.template.php" destination="$boarddir/Themes/default" />
+		<require-file name="SMF2/SpamBlockerLookup.template.php" destination="$boarddir/Themes/default" />
+		<require-file name="SMF2/SpamBlocker.english.php" destination="$boarddir/Themes/default/languages" />
+		<require-file name="SMF2/SpamBlocker.english-utf8.php" destination="$boarddir/Themes/default/languages" />	
+		<require-file name="SMF2/images/spamblocker_back_disabled.png" destination="$boarddir/Themes/default/images/admin" />
+		<require-file name="SMF2/images/spamblocker_back_enabled_hover.png" destination="$boarddir/Themes/default/images/admin" />
+		<require-file name="SMF2/images/spamBlocker-help.gif" destination="$boarddir/Themes/default/images/admin" />
+		<require-file name="SMF2/images/spamblocker_forward_enabled_hover.png" destination="$boarddir/Themes/default/images/admin" />
+		<require-file name="SMF2/images/spamblocker_forward_disabled.png" destination="$boarddir/Themes/default/images/admin" />	
+		<require-file name="SMF2/images/spamblocker_vertical_bar-x.gif" destination="$boarddir/Themes/default/images/admin" />
+		<require-file name="SMF2/images/spamblocker_vertical_bar-y.gif" destination="$boarddir/Themes/default/images/admin" />
+		<require-file name="SMF2/images/spamBlocker-license.pdf" destination="$boarddir/Themes/default/images/admin" />
+		<require-file name="SMF2/images/spamBlocker-guide.pdf" destination="$boarddir/Themes/default/images/admin" />	
+		<require-file name="SMF2/images/spamBlocker-sort_date.jpg" destination="$boarddir/Themes/default/images/admin" />
+		<require-file name="SMF2/images/spamBlocker-sort_user.png" destination="$boarddir/Themes/default/images/admin" />
+		<require-file name="SMF2/images/spamBlocker-sort_ip.gif" destination="$boarddir/Themes/default/images/admin" />
+		<require-file name="SMF2/images/spamBlocker-reported_spam.gif" destination="$boarddir/Themes/default/images/admin" />	
+		<require-file name="SMF2/images/spamBlocker_settings.png" destination="$imagesdir/admin" />					
+		<require-file name="SMF2/images/spamblocker_main_block.png" destination="$imagesdir/admin" />	
+		<require-file name="SMF2/images/spamBlocker_guide.png" destination="$imagesdir/admin" />
+		<require-file name="SMF2/images/spamBlocker_license.png" destination="$imagesdir/admin" />
+		<code>SMF2/spamblocker_mysql.php</code>
+	</install>	
+					
+	<uninstall for="2.0 - 2.99.99">
+		<readme parsebbc="true">SMF2/spamblocker_uninstall_readme.txt</readme>		
+		<modification reverse="true">SMF2/install.xml</modification>
+		<code>SMF2/spamblocker_uninstall.php</code>
+		<remove-file name="$sourcedir/SpamBlocker.php" />
+		<remove-file name="$sourcedir/Subs-SpamBlocker.php" />
+		<remove-file name="$sourcedir/SpamBlockerAdmin.php" />
+		<remove-file name="$sourcedir/Subs-SpamBlockerAdmin.php" />
+		<remove-file name="$sourcedir/SpamBlockerHooks.php" />
+		<remove-file name="$sourcedir/SpamBlockerAkismet.php" />
+		<remove-file name="$boarddir/Themes/default/SpamBlockerAdmin.template.php" />		
+		<remove-file name="$boarddir/Themes/default/scripts/spamblocker-pages.js" />		
+		<remove-file name="$boarddir/Themes/default/SpamBlockerWhitelist.template.php" />	
+		<remove-file name="$boarddir/Themes/default/SpamBlockerBlacklist.template.php" />
+		<remove-file name="$boarddir/Themes/default/SpamBlockerLookup.template.php" />
+		<remove-file name="$boarddir/Themes/default/images/admin/spamblocker_back_enabled_hover.png" />
+		<remove-file name="$boarddir/Themes/default/images/admin/spamblocker_back_disabled.png" />
+		<remove-file name="$boarddir/Themes/default/images/admin/spamblocker_forward_enabled_hover.png" />
+		<remove-file name="$boarddir/Themes/default/images/admin/spamblocker_forward_disabled.png" />	
+		<remove-file name="$boarddir/Themes/default/images/admin/spamblocker_vertical_bar-x.gif" />
+		<remove-file name="$boarddir/Themes/default/images/admin/spamblocker_vertical_bar-y.gif" />				
+		<remove-file name="$boarddir/Themes/default/images/admin/spamBlocker-sort_date.jpg" />
+		<remove-file name="$boarddir/Themes/default/images/admin/spamBlocker-sort_ip.gif" />
+		<remove-file name="$boarddir/Themes/default/images/admin/spamBlocker-help.gif" />
+		<remove-file name="$boarddir/Themes/default/images/admin/spamBlocker-reported_spam.gif" />
+		<remove-file name="$boarddir/Themes/default/images/admin/spamBlocker-sort_user.png" />
+		<remove-file name="$boarddir/Themes/default/images/admin/spamBlocker-license.pdf" />	
+		<remove-file name="$boarddir/Themes/default/images/admin/spamBlocker-guide.pdf" />
+		<remove-file name="$imagesdir/admin/spamblocker_main_block.png" />	
+		<remove-file name="$imagesdir/admin/spamBlocker_settings.png" />
+		<remove-file name="$imagesdir/admin/spamBlocker_guide.png" />
+		<remove-file name="$imagesdir/admin/spamBlocker_license.png" />	
+		<remove-file name="$languagedir/SpamBlocker.english.php" />
+		<remove-file name="$languagedir/SpamBlocker.english-utf8.php" />		
+	</uninstall>
+</package-info>
