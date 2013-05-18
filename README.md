@@ -13,10 +13,8 @@ Purpose and/or usage of this software package:
 
 The purpose of this anti-spam modification software package is to detect unsolicited web traffic (a.k.a. Spam) and restrict and/or limit its access from registering as users and/or participating on your Simple Machines Forum website.
 
-This software package is distributed under the terms of its [url=http://askusaquestion.net/index.php/page=spamblocker_license]Freeware License[/url] whereas all of its condtional terms are noted within its license link from your SMF Administraion Panel and/or the link provided in this paragraph. If you do not agree to the terms shown in the license, do not download and/or use this software package.  
+This software package is distributed under the terms of its Freeware License (http://askusaquestion.net/index.php/page=spamblocker_license) whereas all of its condtional terms are noted within its license link from your SMF Administraion Panel and/or the link provided in this paragraph. If you do not agree to the terms shown in the license, do not download and/or use this software package.  
 
-If you commend this software package and/or any other contributions that [url=http://askusaquestion.net]underdog@askusaquestion.net[/url] develops for the SMF community,
-please feel free to make a donation to paypal using the image/link provided below. Thank you for opting to use this software package.
 
 Spam Blocker Features:
 
