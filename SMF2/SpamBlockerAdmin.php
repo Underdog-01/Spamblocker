@@ -811,7 +811,7 @@ function SettingsSpamBlocker()
 	$context['spamblocker']['chars_low_count'] = !empty($modSettings['spamBlocker_charsLowCount']) ? (int)$modSettings['spamBlocker_charsLowCount'] : 1;
 	$context['spamblocker']['delete_members'] = !empty($modSettings['spamBlocker_deleteMembers']) ? (int)$modSettings['spamBlocker_deleteMembers'] : 1;
 	$context['spamblocker']['hide_members'] = !empty($modSettings['spamBlocker_hideMembers']) ? (int)$modSettings['spamBlocker_hideMembers'] : 2;
-	$context['spamblocker']['optimize'] = !empty($modSettings['spamBlocker_optimizeInt']) ? $modSettings['spamBlocker_optimizeInt'] : 50;
+	$context['spamblocker']['optimize'] = !empty($modSettings['spamBlocker_optimizeInt']) ? $modSettings['spamBlocker_optimizeInt'] : 'off';
 	$context['settings_title'] = $txt['spamBlockerSettings'];
 	$context['post_url'] = $scripturl . '?action=admin;area=spamBlocker;sa=spamBlockerSettings;' . $context['session_var'] . '=' . $context['session_id'] . ';save';	
 	$context['sub_template'] = 'spamBlocker_settings_page';	
