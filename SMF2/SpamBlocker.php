@@ -19,15 +19,17 @@ if (!defined('SMF'))
 	
 /*	This file handles Spam Blocker's main functions.
 
-	void function spamBlockerRegister($memberID, $name, $openid)
+	void function spamBlockerRegister($name, $email, $ipUser, $data)
 		- If executed for general check, $data should be true which will return false for pass and true for fail
 		- Primarily executed from /Sources/Register.php
 		- Denies access or adds a ban trigger for the ip/email (fatal_error message)
 		- Optimizes all related tables on preset number of spam entities
 		- Logs out entity flagged as spam
+		- Sets 24 hour cache for IP, time and pass/fail
 		- Returns false for IP's that are not flagged as spam
 			
-	void function SpamBlockerCheck($ip='1.0.0.0')
+	void function SpamBlockerCheck($email,$ip, $name, $checkCache)
+		- Does not perform the below checks if IP already exists in the 24 hour cache
 		- Uses a socket connection or gethostbyname to run an external check on a given ip/email
 		- Returns an array of data including ip-check results & database query
 		
@@ -50,11 +52,15 @@ function spamBlockerRegister($name, $email, $ipUser, $data)
 	require_once($sourcedir . '/Subs-SpamBlocker.php');
 	require_once($sourcedir . '/Subs.php');
 	
-	/* Check the whitelist ... */	
+	/* Check the whitelist && 24 hour cache ... */
+	$checkCache = IPspamBlockerCache(trim($ipUser));
 	if (IPspamBlockerExists(trim($ipUser)))
+		return false;	
+	elseif ($checkCache && $checkCache !== 'fail')
 		return false;	
 	
 	$ip = trim($ipUser);
+	$ip_array = explode('.', $ip);
 	$ip_parts = ip2range($ip);
 	$memberID = 0;	
 	$time = time();
@@ -65,26 +71,32 @@ function spamBlockerRegister($name, $email, $ipUser, $data)
 	/* Delete expired bans matching ip/email and then check the current user/entity */
 	spamBlockerExpired($ip_parts, $email);
 	
-	$spamBlocker = SpamBlockerCheck($email, $ipUser, $name);
+	$spamBlocker = SpamBlockerCheck($email, $ipUser, $name, $checkCache);
 	
 	$optimized_tables = array('spamblocker_blacklist', 'spamblocker_whitelist', 'spamblocker_settings', 'ban_groups', 'ban_items', 'members', 'log_banned', 'log_errors', 'settings');
 	list($spamcheck, $user_message, $error_message, $enable_errorlog, $enable_mod, $enable_email, $enable_reset, $ban_option, $ban_full, $ban_post, $ban_register, $ban_login, $expiration, $expire_time) = $spamBlocker;
 	$reason = !empty($user_message) ? $user_message : $txt['spamBlockerSpam'];					
-										
+									
 	if ((int)$expiration == 0 || (int)$expire_time < 1)
 		$date = false;				
 	else
 		$date = floor(((int)$expire_time * 86400) + time());	
-	
+		
 	if ($spamcheck && count($ip_parts) == 4 && (int)$enable_mod == 1)
 	{		
-		if ($data)
+		if ($data && $ip !== $txt['spamBlocker_defaultIP'] && $spamcheck == true && !$checkCache)
+		{
+			list($ip_1, $ip_2, $ip_3, $ip_4) = $ip_array;			
+			$request = $smcFunc['db_query']('', "INSERT INTO {db_prefix}spamblocker_cache (`ip_1`, `ip_2`, `ip_3`, `ip_4`, `ip_pass`, `ip_time`) VALUES ('{$ip_1}', '{$ip_2}', '{$ip_3}', '{$ip_4}', 0, '{$time}')");
+			return $spamcheck;
+		}
+		elseif ($data)
 			return $spamcheck;		
 				
 		if ($enable_errorlog == 1)
 			log_error(sprintf($error_message . ' - <span class="remove">' . $ipUser . '</span>', 'IP'));			
 		
-		if ((int)$ban_option == 1)
+		if ((int)$ban_option == 1 && !$checkCache)
 		{			
 			$notes = 'spamBlocker_id-' . time();
 			$key = 0;
@@ -242,33 +254,20 @@ function spamBlockerRegister($name, $email, $ipUser, $data)
 				'post_unapproved_topics', 'post_unapproved_replies_own', 'post_unapproved_replies_any',
 			);
 			$user_info['permissions'] = array_diff($user_info['permissions'], $denied_permissions);
-		} 
-		
-		/* Editing these tables frequently may require automatic optimization (optional) */
-		$count_spammers = !empty($modSettings['spamBlocker_spamCount']) ? (int)$modSettings['spamBlocker_spamCount'] : 0;
-		$optimize_enabled = !empty($modSettings['spamBlocker_optimizeInt']) ? $modSettings['spamBlocker_optimizeInt'] : $txt['spamBlockerOff'];
-		if ($optimize_enabled != $txt['spamBlockerOff'] && (int)$count_spammers > (int)$optimize_enabled)
-		{			
-			foreach ($optimized_tables as $table)
-			{					
-				$optimize = $smcFunc['db_query']('', "OPTIMIZE TABLE {db_prefix}{$table}");
-				$smcFunc['db_free_result']($optimize);
-				/* Optimizing one sqlite table optimizes them all */
-				if ($db_type == 'sqlite')
-					break;
-				
-			}			
-			$count_spammers = 0;
-		}
-		$count_spammers++;
-		$setArray['spamBlocker_spamCount'] = (int)$count_spammers;		
-		updateSettings($setArray);
+		}		
 		
 		/* Delete the flagged spam entity from the online user log (matching ip) */
 		$where = 'ip' . $ipUser;
 		$request = $smcFunc['db_query']('', "DELETE FROM {db_prefix}log_online WHERE session LIKE {string:who}", array('who' => $where));
 		
 		/* cache_put_data('modSettings', null, 90); */
+		
+		/* The 1 hour cache for a failing entity is only necessary if the member id was created */
+		if (!$checkCache && (int)$ban_option != 1)
+		{
+			list($ip_1, $ip_2, $ip_3, $ip_4) = $ip_array;			
+			$request = $smcFunc['db_query']('', "INSERT INTO {db_prefix}spamblocker_cache (`ip_1`, `ip_2`, `ip_3`, `ip_4`, `ip_pass`, `ip_time`) VALUES ('{$ip_1}', '{$ip_2}', '{$ip_3}', '{$ip_4}', 0, '{$time}')");
+		}	
 		
 		/* Goodbye Spammer! */
 		if ((int)$checkDelete != 1)
@@ -279,6 +278,10 @@ function spamBlockerRegister($name, $email, $ipUser, $data)
 			fatal_error($spamBlocker[1], false);	
 	}	
 	
+	/* Create/record 1 hour cache for a passing entity so as not to process it again within that timeframe */ 
+	list($ip_1, $ip_2, $ip_3, $ip_4) = $ip_array;	
+	$request = $smcFunc['db_query']('', "INSERT INTO {db_prefix}spamblocker_cache (`ip_1`, `ip_2`, `ip_3`, `ip_4`, `ip_pass`, `ip_time`) VALUES ('{$ip_1}', '{$ip_2}', '{$ip_3}', '{$ip_4}', 1, '{$time}')");
+	
 	/* Delete the duplicate guest in the user log (matching ip) */
 	$where = 'ip' . $ipUser;
 	$request = $smcFunc['db_query']('', "DELETE FROM {db_prefix}log_online WHERE session LIKE {string:who}", array('who' => $where));
@@ -287,7 +290,7 @@ function spamBlockerRegister($name, $email, $ipUser, $data)
 }
 
 /* Check the Email & IP */
-function SpamBlockerCheck($email,$ip, $name)
+function SpamBlockerCheck($email,$ip, $name, $checkCache)
 {
 	global $smcFunc, $modSettings, $boardurl, $sourcedir, $scripturl, $txt, $context;
 	loadLanguage('SpamBlocker');
@@ -336,6 +339,9 @@ function SpamBlockerCheck($email,$ip, $name)
 	
 	if ((int)$spamBlocker['enable_mod'] != 1)
 		return $spamflag;	
+	
+	if ($checkCache === 'fail')
+		return array(true,$spamBlocker['user_message'], $spamBlocker['error_message'], $spamBlocker['enable_errorlog'], $spamBlocker['enable_mod'], $spamBlocker['enable_email'], $spamBlocker['enable_reset'], $spamBlocker['ban_option'], $spamBlocker['ban_full'], $spamBlocker['ban_post'], $spamBlocker['ban_register'], $spamBlocker['ban_login'], $spamBlocker['expiration'], $spamBlocker['expire_time']);
 		
 	/* Source: Stop Forum Spam ~ Anti spam resource for ip/email */	
 	if ($email && (int)$spamBlocker['enable_email'] == 1 && (int)$spamBlocker['enable_sfs'] == 1)
@@ -452,7 +458,7 @@ function SpamBlockerCheck($email,$ip, $name)
 	if ((int)$spamBlocker['enable_akismet'] == 1 && $spamBlocker['akismet_key'] && !$spamflag[0])
 	{				
 		$url = 'http://this_is_anti_spam_login_query_email_only.com';
-		$comment = 'Hello, my name is ' . $name;
+		$comment = $txt['spamBlockerHello'] . $name;
 		$API_Key = $spamBlocker['akismet_key'];
 		
 		$akismet = new Akismet($scripturl ,$API_Key);
