@@ -772,6 +772,8 @@ function spamBlockerClearBlacklist()
 		$request = $smcFunc['db_query']('', "DELETE FROM {db_prefix}ban_items WHERE id_ban_group = {int:ban}",array('ban' => (int)$group));
 	        $request = $smcFunc['db_query']('', "DELETE FROM {db_prefix}spamblocker_blacklist WHERE id_ban_group = {int:ban}",array('ban' => (int)$group));
 	}
+	
+	$request = $smcFunc['db_query']('', "TRUNCATE TABLE {db_prefix}spamblocker_cache");
 
 }
 
@@ -928,12 +930,12 @@ function spamBlockerDefaultReset()
 		$modSettings['spamBlocker_enableRedirect'] = 2;
 	}
 	
-	$setArray = array('spamBlocker_smfError' => 2, 'spamBlocker_hideMembers' => 2, 'spamBlocker_conn_errs' => 1, 'spamBlocker_optimizeInt' => 'off', 'spamBlocker_enable' => 1, 'spamBlocker_deleteMembers' => 1, 'spamBlocker_honeypotThreat' => 0, 'spamBlocker_honeypotType' => 0, 'spamBlocker_PostFilter' => 1, 'spamBlocker_linksCount' => 0, 'spamBlocker_imagesCount' => 0, 'spamBlocker_charsCount' => 300, 'spamBlocker_filteredText' => cleanSpamBlockerInput($txt['spamBlocker_textFilter']), 'spamBlocker_charsLowCount' => 1, 'spamBlocker_wordCount' => 1);	
+	$setArray = array('spamBlocker_smfError' => 2, 'spamBlocker_hideMembers' => 2, 'spamBlocker_conn_errs' => 1, 'spamBlocker_optimizeInt' => '50', 'spamBlocker_enable' => 1, 'spamBlocker_deleteMembers' => 1, 'spamBlocker_honeypotThreat' => 0, 'spamBlocker_honeypotType' => 0, 'spamBlocker_PostFilter' => 1, 'spamBlocker_linksCount' => 0, 'spamBlocker_imagesCount' => 0, 'spamBlocker_charsCount' => 300, 'spamBlocker_filteredText' => cleanSpamBlockerInput($txt['spamBlocker_textFilter']), 'spamBlocker_charsLowCount' => 1, 'spamBlocker_wordCount' => 1);	
 	updateSettings($setArray);			
 	$modSettings['spamBlocker_smfError'] = 2;
 	$modSettings['spamBlocker_hideMembers'] = 2;
 	$modSettings['spamBlocker_conn_errs'] = 1;
-	$modSettings['spamBlocker_optimizeInt'] = 'off';
+	$modSettings['spamBlocker_optimizeInt'] = '50';
 	$modSettings['spamBlocker_enable'] = '1';	
 	$modSettings['spamBlocker_deleteMembers'] = 1;
 	$modSettings['spamBlocker_honeypotThreat'] = 0;
