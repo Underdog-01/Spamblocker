@@ -22,6 +22,14 @@ if (!defined('SMF'))
 	void function IPspamBlockerExists($ip='255.255.255.254')	
 		- check if IP exists in the whitelist
 		- returns true if ip is in whitelist else returns false
+	
+	void function IPspamBlockerCache($ip='255.255.255.254')
+		- check if IP exists in the 24 hour cache
+		- returns true if time has not expired and IP exists in cache
+		- returns false and removes entry if time has expired and IP exists in cache
+		- returns 'fail' if IP exists in the cache and ip_pass was set to 0 (from a previous fail flag)
+		- deletes all expired entries during the process
+		- else returns false 
 		
 	void function spamBlockerExpired()	
 		- deletes all ban & blacklist entries matching IP and email of registering user created by this mod that have expired
@@ -119,13 +127,53 @@ function IPspamBlockerExists($ip='255.255.255.254')
 	return false;
 }
 
+function IPspamBlockerCache($ip='255.255.255.254', $pass = 1)
+{
+	global $sourcedir, $smcFunc;	
+	
+	$i = 0; 
+	$ip_array = explode('.', $ip);
+	$hi_low = array();	
+	$ipdata = array('reference', 'ip_1','ip_2','ip_3','ip_4','ip_pass','ip_time');
+
+	$request = $smcFunc['db_query']('', "SELECT reference,ip_1,ip_2,ip_3,ip_4,ip_pass,ip_time FROM {db_prefix}spamblocker_cache ORDER BY reference ASC");
+	while ($val = $smcFunc['db_fetch_assoc']($request))
+	{	
+		foreach ($ipdata as $data)
+		{
+			if (empty($val[$data]))
+				$val[$data] = 0;
+
+			$hi_low[$i][$data] = (int)$val[$data];
+		}
+		$i++;
+	}
+	$smcFunc['db_free_result']($request);
+
+	foreach ($hi_low as $z)
+	{
+		if ((time() > ($z['ip_time'] + 3600)) && ($ip_array[0] == $z['ip_1']) && ($ip_array[1] == $z['ip_2']) && ($ip_array[2] == $z['ip_3']) && ($ip_array[3] == $z['ip_4']))
+		{
+			$request = $smcFunc['db_query']('', "DELETE FROM {db_prefix}spamblocker_cache WHERE reference = {int:ref}",array('ref' => (int)$z['reference']));
+			return false;
+		}
+		elseif (($ip_array[0] == $z['ip_1']) && ($ip_array[1] == $z['ip_2']) && ($ip_array[2] == $z['ip_3']) && ($ip_array[3] == $z['ip_4']) && ($z['ip_pass'] == 1))
+			return true;		
+		elseif (($ip_array[0] == $z['ip_1']) && ($ip_array[1] == $z['ip_2']) && ($ip_array[2] == $z['ip_3']) && ($ip_array[3] == $z['ip_4']) && ($z['ip_pass'] == 0))
+			return 'fail';
+		elseif ((time() > ($z['ip_time'] + 3600)))
+			$request = $smcFunc['db_query']('', "DELETE FROM {db_prefix}spamblocker_cache WHERE reference = {int:ref}",array('ref' => (int)$z['reference']));
+	}	
+				
+	return false;
+}
+
 /* Delete expired bans */	
 function spamBlockerExpired($ip_array, $email)
 {	
 	global $smcFunc;		
 	$ban_ids = array();
 	$check = false;	
-	$columns = array('id_ban_group', 'id_member');
 	$yvalues = array('current_time' => time() + 86400, 'email' => $email);
 	$xvalues = array(
 			'ip_low1' => $ip_array[0]['low'],			
@@ -145,14 +193,8 @@ function spamBlockerExpired($ip_array, $email)
 						WHERE {int:current_time} > ban.expire_time  
 						LIMIT 1", $xvalues);
 	while ($val = $smcFunc['db_fetch_assoc']($result))
-	{			
-		foreach ($columns as $column)
-		{
-			if ((empty($column)) || !$column)
-				$val[$column] = 0;
-		}                               
-		$ban_ids[] = array('id_ban' => $val['id_ban_group'], 'id_member' => $val['id_member']);				
-	}
+		$ban_ids[] = array('id_ban' => (!empty($val['id_ban_group']) ? $val['id_ban_group'] : 0), 'id_member' => (!empty($val['id_member']) ? $val['id_member'] : 0));				
+	
 	$smcFunc['db_free_result']($result);
 	
 	foreach ($ban_ids as $ref)
@@ -176,14 +218,8 @@ function spamBlockerExpired($ip_array, $email)
 						AND bi.email_address = {string:email} 											
 						LIMIT 1", $yvalues);
 	while ($val = $smcFunc['db_fetch_assoc']($result))
-	{			
-		foreach ($columns as $column)
-		{
-			if ((empty($column)) || !$column)
-				$val[$column] = 0;
-		}                               
-		$ban_ids[] = array('id_ban' => $val['id_ban_group'], 'id_member' => $val['id_member']);				
-	}
+		$ban_ids[] = array('id_ban' => (!empty($val['id_ban_group']) ? $val['id_ban_group'] : 0), 'id_member' => (!empty($val['id_member']) ? $val['id_member'] : 0));				
+	
 	$smcFunc['db_free_result']($result);
 	
 	foreach ($ban_ids as $ref)
@@ -204,7 +240,6 @@ function spamBlockerLoginExpired($username)
 	global $smcFunc;		
 	$ban_ids = array();
 	$check = false;	
-	$columns = array('id_ban_group', 'id_member');	
 	
 	if (!$username)
 		return $check;
@@ -218,14 +253,8 @@ function spamBlockerLoginExpired($username)
 						AND ban.name LIKE {string:username}
 						LIMIT 1", $values);
 	while ($val = $smcFunc['db_fetch_assoc']($result))
-	{			
-		foreach ($columns as $column)
-		{
-			if ((empty($column)) || !$column)
-				$val[$column] = 0;
-		}                               
-		$ban_ids[] = array('id_ban' => $val['id_ban_group'], 'id_member' => $val['id_member']);				
-	}
+		$ban_ids[] = array('id_ban' => (!empty($val['id_ban_group']) ? $val['id_ban_group'] : 0), 'id_member' => (!empty($val['id_member']) ? $val['id_member'] : 0));				
+	
 	$smcFunc['db_free_result']($result);
 	
 	foreach ($ban_ids as $key => $ref)
