@@ -1,7 +1,7 @@
 <?php
 // SMF Version: 2.0.4; Spam Blocker
 /*
- * Spam Blocker was developed for SMF forums c/o Underdog @ http://askusaquestion.net	
+ * Spam Blocker was developed for SMF forums c/o Underdog @ http://askusaquestion.net 
  * Copyright 2013 underdog@askusaquestion.net
  * This software package is distributed under the terms of its Freeware License
  * http://askusaquestion.net/index.php/page=spamblocker_license
@@ -40,6 +40,7 @@ $txt['spamBlocker_banned'] = 'Ban Flagged IP\'s';
 $txt['spamblocker_submit'] = 'Submit';
 $txt['spamBlockerBan'] = 'SpamBlocker IP Ban';
 $txt['spamBlockerSpam'] = 'spam';
+$txt['spamBlockerHello'] = 'Hello, my name is ';
 $txt['spamBlocker_confirm'] = 'Do you confirm this action?';
 $txt['spamBlockerIP_BlacklistRemove'] = 'IP\'s were removed from your blacklist & ban list';
 $txt['spamBlockerIP_BlacklistNotExpired'] = 'No expired ban IP\'s were found';
@@ -78,7 +79,6 @@ $txt['spamBlockerMainConfig'] = 'Main Configuration';
 $txt['spamBlockerMessaging'] = 'Messaging';
 $txt['spamBlockerMaintenance'] = 'Maintenance';
 $txt['spamBlockerBanConfig'] = 'Ban Configuration';
-$txt['spamBlocker_optimize'] = 'Enumeration to auto optimize related tables (off to disable)';
 $txt['spamBlocker_hide_members'] = 'Display blacklisted members in the member list';
 $txt['spamBlocker_delete_members'] = 'Permanently delete flagged member ID\'s at registration';
 $txt['spamBlockerAkismetKey'] = '<a href="https://akismet.com/signup/">Akismet</a> API Key';
@@ -185,7 +185,7 @@ $helptxt['spamBlocker_sbPassHelp'] = 'Enabling this option will ignore any spam 
 $helptxt['spamBlocker_sbResetHelp'] = 'Enabling this option will automatically omit expired ban/blacklist entities at time of login.<br />This check is done at time of login, registration or every 3-6 hours.<br /><br />Login and registration are limited to one query matching the ip, email or username.<br /><br />The 3-6 hour interval is limited to 500 database queries every 3 hours. Both the 3-6 hour expired check interval and registration expired check are always enabled while the login expired check is dependant on this setting.';
 $helptxt['spamBlocker_sbBanHelp'] = 'Enabling this feature will ensure both the email and IP are banned and blacklisted.<br /><br />Disabling this feature will not allow the flagged IP/Email to register but will not add any entries to the ban/blacklist.';
 $helptxt['spamBlocker_sbHideHelp'] = 'This option only applies when <strong>Permanently delete flagged member ID\'s at registration</strong> is disabled.<br /><br />Enabling this option will allow you to view blacklisted members in the member list.<br /><br />Disabling this option will not include blacklisted members in your member list.';
-$helptxt['spamBlocker_sbDeleteHelp'] = 'Enabling this option will ensure entities flagged as spam are not added as members.<br /><br />Disabling this option will add those spam entities as members while still banning and blacklisting them.';
+$helptxt['spamBlocker_sbDeleteHelp'] = 'Enabling this option will ensure entities flagged as spam are not added as members. It will also disable restrictions for login & posting as they are not necessary when this is enabled.<br /><br />Disabling this option will add those spam entities as members while still banning and blacklisting them.';
 $helptxt['spamBlocker_sbAkismetEnableHelp'] = 'An Akismet API key is required to use this feature.<br /><br />Enabling this option will filter a users email through the Akismet anti-spam database at time of registration.<br />Emails flagged as spam will be banned/blacklisted.';
 $helptxt['spamBlocker_sbSFSEnableEmailHelp'] = 'Enabling this option will filter a users email through the Stop Forum Spam anti-spam database at time of registration.<br />Emails flagged as spam will be banned/blacklisted.';
 $helptxt['spamBlocker_sbSFSEnableIpHelp'] = 'Enabling this option will filter a users IP through the Stop Forum Spam anti-spam database at time of registration.<br />IP\'s flagged as spam will be banned/blacklisted.';
@@ -204,7 +204,6 @@ $helptxt['spamBlocker_sbSmfErrHelp'] = 'Enabling this option will report every S
 $helptxt['spamBlocker_sbConnErrsHelp'] = 'Enabling this option will log any connection errors that occured while attempting to access any anti-spam source databases.';
 $helptxt['spamBlocker_sbUserMsgHelp'] = 'The text entered here will be displayed to the user when their access is denied due to being blacklisted.';
 $helptxt['spamBlocker_sbLogMsgHelp'] = 'This feature only applies when Spam Blocker error messages is enabled.<br ><br >The text entered here will be displayed in your error log when a banned entity attempts to access your forum.';
-$helptxt['spamBlocker_sbAutoOptimizeHelp'] = 'This feature will automatically optimize all your related database tables that are frequently altered by this modification.<br /><br />The frequency of optimization depends on the integer opted.<br /><br />Setting this to off will disable this feature.';
 $helptxt['spamBlocker_sbExpiredHelp'] = 'This option will manually delete any expired ban/blacklist entities. The related member ID\'s will be deleted if that secondary option is also checked.';
 $helptxt['spamBlocker_sbEmendHelp'] = 'This option will cross reference the Spam Blocker blacklist to your ban entities. Any data in the blacklist that does not have a corresponding entry in your ban list will be omitted.';
 $helptxt['spamBlocker_sbSetExpireHelp'] = 'Set the time interval (in days) for how long your banned entities will transpire.<br /><br />Expired ban/blacklist entities including user id\'s will automatically be omitted every 6 hours. Expired entities are also omitted at the time of registration if that feature was opted.';
