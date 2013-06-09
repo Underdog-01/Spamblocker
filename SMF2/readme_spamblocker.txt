@@ -31,7 +31,8 @@ Spam Blocker Features:
 [li]Options for specific ban restrictions[/li]
 [li]Custom user & error messages[/li]  
 [li]Whitelist that allows specific IP's/Ranges to bypass the IP/Email check[/li] 
-[li]Blacklist of IP's/Ranges added to the ban list by Spam Blocker[/li]  
+[li]Blacklist of IP's/Ranges added to the ban list by Spam Blocker[/li]
+[li]1 hour cache of data to limit resource usage[/li]
 [li]License and guide for usage are provided on the Administration page[/li]
 [/list]
 
@@ -82,6 +83,7 @@ Changelog:
 + Blacklist Optimization (Ban list comparison)
 + Option to delete expired Blacklist IP's
 + Option to allow Spamblocker to auto delete expired ban's
++ 1 hour cache (ip, time, pass/fail) to limit resource usage
 + License and guide provided on Admin page
 [hr]
 
