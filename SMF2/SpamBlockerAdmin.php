@@ -67,7 +67,7 @@ function spamBlocker()
 	$_SESSION['spamBlockerConfigSFS_Key'] = !empty($_SESSION['spamBlockerConfigSFS_Key']) ? $_SESSION['spamBlockerConfigSFS_Key'] : false;	
 		
 	/*  Fill $context with save data if necessary  */	
-	$spamblocker_settings = array('user_message', 'error_message', 'enable_errorlog', 'enable_mod', 'enable_sfs', 'enable_akismet', 'enable_honeypot', 'enable_spamhaus', 'enable_email', 'enable_pass', 'enable_expired', 'enable_reset', 'enable_emend', 'ban_option', 'smf_error', 'ban_full', 'ban_post', 'ban_register', 'ban_login', 'expiration', 'expire_time', 'optimize', 'hide_members', 'delete_members', 'akismet_key', 'honeypot_key', 'enable_post', 'akismet_count', 'links_count', 'enable_errs', 'honeypot_threat', 'honeypot_type', 'enable_delBlacklist', 'enable_postSFS', 'sfs_key', 'enable_postDisplay', 'enable_default', 'enable_postFilter', 'report_errs', 'redirect_path', 'enable_redirect', 'text_filter', 'chars_count', 'chars_low_count', 'word_count', 'images_count');	
+	$spamblocker_settings = array('user_message', 'error_message', 'enable_errorlog', 'enable_mod', 'enable_sfs', 'enable_akismet', 'enable_honeypot', 'enable_spamhaus', 'enable_email', 'enable_pass', 'enable_expired', 'enable_reset', 'enable_emend', 'ban_option', 'smf_error', 'ban_full', 'ban_post', 'ban_register', 'ban_login', 'expiration', 'expire_time', 'hide_members', 'delete_members', 'akismet_key', 'honeypot_key', 'enable_post', 'akismet_count', 'links_count', 'enable_errs', 'honeypot_threat', 'honeypot_type', 'enable_delBlacklist', 'enable_postSFS', 'sfs_key', 'enable_postDisplay', 'enable_default', 'enable_postFilter', 'report_errs', 'redirect_path', 'enable_redirect', 'text_filter', 'chars_count', 'chars_low_count', 'word_count', 'images_count');	
 	$whitelist = array('user_ip', 'delete', 'id_member', 'delete_member');
 	$lookups = array('input_email', 'input_ip');
 	
@@ -135,10 +135,10 @@ function spamBlocker()
 		
 	/* Set the javascript variables for enable and disable from the language strings */
 	$context['spamblocker_enable_disable'] = '
-	<script type="text/javascript">
+	<script type="text/javascript"><!-- // --><![CDATA[
 		var spamblocker_enabled = '. json_encode(iconv($context['character_set'], 'UTF-8', $txt['spamBlocker_enabled'])).'
 		var spamblocker_disabled = '. json_encode(iconv($context['character_set'], 'UTF-8', $txt['spamBlocker_disabled'])).'
-	</script>';	
+	// ]]></script>';	
 						
 	$subActions = array(
 					'spamBlockerSettings' => array('SettingsSpamBlocker'),	
@@ -170,8 +170,11 @@ function SettingsSpamBlocker()
 	$context['robot_no_index'] = true;	
 	$context[$context['admin_menu_name']]['tab_data']['description'] = $txt['spamBlocker_general'];
 	$tableName = 'spamblocker_settings';	
-	$setting_types = array('user_message', 'error_message', 'enable_errorlog', 'enable_mod', 'enable_sfs', 'enable_akismet', 'enable_honeypot', 'enable_spamhaus', 'enable_email', 'enable_pass', 'enable_expired', 'enable_reset', 'enable_emend', 'ban_option', 'smf_error', 'ban_full', 'ban_post', 'ban_register', 'ban_login', 'expiration', 'expire_time', 'optimize', 'hide_members', 'delete_members', 'akismet_key', 'honeypot_key', 'enable_post', 'akismet_count', 'links_count', 'enable_errs', 'honeypot_threat', 'honeypot_type', 'enable_delBlacklist', 'enable_postSFS', 'sfs_key', 'enable_postDisplay', 'enable_default', 'enable_postFilter', 'report_errs', 'redirect_path', 'enable_redirect', 'text_filter', 'chars_count', 'chars_low_count', 'word_count', 'images_count');		
-	$restrictions = array('ban_full', 'ban_post', 'ban_register', 'ban_login', 'expiration', 'expire_time');
+	$setting_types = array('user_message', 'error_message', 'enable_errorlog', 'enable_mod', 'enable_sfs', 'enable_akismet', 'enable_honeypot', 'enable_spamhaus', 'enable_email', 'enable_pass', 'enable_expired', 'enable_reset', 'enable_emend', 'ban_option', 'smf_error', 'ban_full', 'ban_post', 'ban_register', 'ban_login', 'expiration', 'expire_time', 'hide_members', 'delete_members', 'akismet_key', 'honeypot_key', 'enable_post', 'akismet_count', 'links_count', 'enable_errs', 'honeypot_threat', 'honeypot_type', 'enable_delBlacklist', 'enable_postSFS', 'sfs_key', 'enable_postDisplay', 'enable_default', 'enable_postFilter', 'report_errs', 'redirect_path', 'enable_redirect', 'text_filter', 'chars_count', 'chars_low_count', 'word_count', 'images_count');		
+	$modSetting_types = array('enable_mod' => 'enable', 'smf_error' => 'smfError', 'report_errs' => 'report_errs', 'hide_members' => 'hideMembers', 'enable_post' => 'akismetPost', 'enable_postSFS' => 'PostSFS', 'enable_postDisplay' => 'PostDisplay', 'enable_postFilter' => 'PostFilter', 'enable_errs' => 'conn_errs', 'enable_redirect' => 'enableRedirect', 'delete_members' => 'deleteMembers');
+	$absCounts = array('word_count' => 'wordCount', 'akismet_count' => 'postCount', 'links_count' => 'linksCount', 'images_count' => 'imagesCount', 'chars_low_count' => 'charsLowCount', 'chars_count' => 'charsCount', 'honeypot_threat' => 'honeypotThreat');
+	$sourceKeys = array('akismet_key' => 'akismetKey', 'sfs_key' => 'sfsKey', 'honeypot_key' => 'honeypotKey');	
+	$zeroes = array('ban_full', 'ban_post', 'ban_register', 'ban_login', 'expiration', 'expire_time', 'akismet_count', 'links_count', 'images_count', 'chars_count', 'chars_low_count', 'honeypot_threat', 'honeypot_type');
 	$toggles = array('sb_mod', 'sb_sfs', 'sb_akismet', 'sb_honeypot', 'sb_spamhaus', 'sb_email', 'sb_pass', 'sb_err', 'sb_ban', 'sb_reset', 'sb_smf_err', 'sb_hide_members', 'sb_delete_members', 'sb_akismet_post', 'sb_connection_errs', 'sb_postSFS', 'sb_postDisplay', 'sb_postFilter', 'sb_reporting_errs', 'sb_enableRedirect');
 	$db = array('enable_mod', 'enable_sfs', 'enable_akismet', 'enable_honeypot', 'enable_spamhaus', 'enable_email', 'enable_pass', 'enable_errorlog', 'ban_option', 'enable_reset', 'smf_error', 'hide_members', 'delete_members', 'enable_post', 'enable_errs', 'enable_postSFS', 'enable_postDisplay', 'enable_postFilter', 'report_errs', 'enable_redirect');	
 	$_SESSION['spamBlockerConfig_Msg'] = !empty($_SESSION['spamBlockerConfig_Msg']) ? $_SESSION['spamBlockerConfig_Msg'] : '&nbsp;';	
@@ -183,556 +186,233 @@ function SettingsSpamBlocker()
 	/*  Check for new settings values and save to database if necessary */
 	if (isset($_GET['save']))
 		checkSession('request');
-		
-	foreach ($setting_types as $setting => $setting_type)
+	
+	if ((int)$context['spamblocker']['enable_sfs'] == 1 && (int)$context['spamblocker']['enable_spamhaus'] == 1 && (int)$context['spamblocker']['enable_akismet'] == 1 && (int)$context['spamblocker']['enable_honeypot'] == 1 && $context['spamblocker']['enable_email'] == 1)
 	{
-		if (in_array($setting_type, $restrictions) && empty($context['spamblocker'][$setting_type]) && isset($_REQUEST['save']))
-		{
+		$context['spamblocker']['enable_email'] = 2;
+		$_SESSION['spamBlockerConfig_Msg'] = $txt['spamBlockerSource_NoneError'];		
+	}
+		
+	foreach ($setting_types as $key)
+	{	
+		if ((in_array($key, $zeroes)) && empty($context['spamblocker'][$key]) && isset($_REQUEST['save']))
 			$context['spamblocker'][$setting_type] = 0;				
-		}
-		elseif (isset($_REQUEST['save']) && (empty($context['spamblocker'][$setting_type])) && $setting_type == 'akismet_count')
+		elseif (empty($context['spamblocker'][$key]))
 		{
-			$context['spamblocker'][$setting_type] = 0;			
-		}
-		elseif (isset($_REQUEST['save']) && (empty($context['spamblocker'][$setting_type])) && $setting_type == 'links_count')
-		{
-			$context['spamblocker'][$setting_type] = 0;			
-		}
-		elseif (isset($_REQUEST['save']) && (empty($context['spamblocker'][$setting_type])) && $setting_type == 'images_count')
-		{
-			$context['spamblocker'][$setting_type] = 0;			
-		}
-		elseif (isset($_REQUEST['save']) && (empty($context['spamblocker'][$setting_type])) && $setting_type == 'chars_count')
-		{
-			$context['spamblocker'][$setting_type] = 0;			
-		}
-		elseif (isset($_REQUEST['save']) && (empty($context['spamblocker'][$setting_type])) && $setting_type == 'chars_low_count')
-		{
-			$context['spamblocker'][$setting_type] = 0;			
-		}
-		elseif (isset($_REQUEST['save']) && (empty($context['spamblocker'][$setting_type])) && $setting_type == 'honeypot_type')
-		{
-			$context['spamblocker'][$setting_type] = 0;			
-		}
-		elseif (isset($_REQUEST['save']) && (empty($context['spamblocker'][$setting_type])) && $setting_type == 'honeypot_threat')
-		{
-			$context['spamblocker'][$setting_type] = 0;			
-		}
-		elseif (empty($context['spamblocker'][$setting_type]))
-		{
-			$context['spamblocker'][$setting_type] = false;
-			continue;	
-		}		
-		
-		if ($setting_type == 'ban_full' && $context['spamblocker'][$setting_type] == 1)
-		{
-			$context['spamblocker']['ban_post'] = 0;
-			$context['spamblocker']['ban_register'] = 0;
-			$context['spamblocker']['ban_login'] = 0;
-		}
-		
-		if ((int)$context['spamblocker']['enable_sfs'] == 1 && (int)$context['spamblocker']['enable_findip'] == 1 && (int)$context['spamblocker']['enable_honeypot'] == 1 && $context['spamblocker']['enable_email'] == 1)
-		{
-			$context['spamblocker']['enable_email'] = 2;
-			$_SESSION['spamBlockerConfig_Msg'] = $txt['spamBlockerSource_NoneError'];
+			$context['spamblocker'][$key] = false;
 			continue;
 		}	
 		
-		if ($setting_type == 'expire_time' && (int)$context['spamblocker']['expire_time'] > 0)
+		$value = $context['spamblocker'][$key];
+		
+		if ($key == 'user_message' || $key == 'error_message')
+		{
+			$val = trim($value);
+			createSpamBlocker_setting($tableName, $key, $val);
+			continue;
+		}
+		elseif ($key == 'ban_post' || $key == 'ban_register' || $key == 'ban_login')
 		{			
-			$days = (int)$context['spamblocker']['expire_time'];
-			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$setting_type} = '{$days}'");
+			$val = ((int)$value == 1) ? 1 : 0;
+			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$key} = {int:val}", array('val' => $val));
+			continue;
+		}	
+		elseif ($key == 'enable_sfs' || $key == 'enable_akismet' || $key == 'enable_honeypot' || $key == 'enable_spamhaus' || $key == 'ban_option' || $key == 'enable_errorlog' || $key == 'enable_email' || $key == 'enable_pass' || $key == 'enable_reset')
+		{
+			$val = ($value == 2) ? 1 : 2;
+			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$key} = {int:val}", array('val' => $val));				
+			continue;
+		}
+		elseif ($key == 'enable_mod' || $key == 'smf_error' || $key == 'report_errs' || $key == 'hide_members' || $key == 'enable_post' || $key == 'enable_postSFS' || $key == 'enable_postDisplay' || $key == 'enable_postFilter' || $key == 'enable_errs' || $key == 'enable_redirect' || $key == 'delete_members')
+		{
+			$setting_type = $modSetting_types[$key];
+			$val = ($value == 2) ? 1 : 2;
+			$setArray['spamBlocker_' . $setting_type] = $val;
+			updateSettings($setArray);			
+			$modSettings['spamBlocker_' . $setting_type] = $val;
+			continue;
+		}						
+		elseif ($key == 'word_count' || $key == 'akismet_count' || $key == 'links_count' || $key == 'images_count' || $key == 'chars_low_count' || $key == 'chars_count' || $key == 'honeypot_threat')
+		{
+			$setting_type = $absCounts[$key];
+			if ($key == 'chars_low_count' && (int)$value < 1)
+				$value = 1;
+			if ($key == 'chars_low_count' && (int)$value >= (!empty($modSettings['spamBlocker_charsCount']) ? (int)$modSettings['spamBlocker_charsCount'] : 60))
+				$value = (!empty($modSettings['spamBlocker_charsCount']) ? (int)$modSettings['spamBlocker_charsCount'] : 60) - 1;
+			if ($key == 'chars_count' && (int)$value < 60)
+				$value = 300;
+			if ($key == 'honeypot_threat' && ((int)$value < 0 || (int)$value > 255))
+				$value = 1;
+			$val = ($value < 0) ? 0 : (int)$value;
+			$setArray['spamBlocker_' . $setting_type] = abs((int)$val);
+			updateSettings($setArray);			
+			$modSettings['spamBlocker_' . $setting_type] = abs((int)$val);
+			continue;
+		}	
+		elseif ($key == 'akismet_key' || $key == 'sfs_key' || $key == 'honeypot_key')
+		{
+			$val = preg_replace('/\s+/', '', $value);
+			$setting_type = $sourceKeys[$key];
+			$setArray['spamBlocker_' . $setting_type] = cleanSpamBlockerQuery($val);
+			updateSettings($setArray);			
+			$modSettings['spamBlocker_' . $setting_type] = cleanSpamBlockerQuery($val);	
+			continue;
+		}
+		elseif ($key == 'expire_time')
+		{
+			if ((int)$value < 1)
+			{
+				$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET expire_time = 0");
+				$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET expiration = 0");
+				continue;
+			}
+			
+			$days = (int)$value;
+			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET expire_time = '{$days}'");
 			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET expiration = 1");
 			continue;
 		}	
-		
-		if ((in_array($setting_type, $restrictions) && $context['spamblocker'][$setting_type] == false) || (in_array($setting_type, $restrictions) && (int)$context['spamblocker'][$setting_type] == 0))
-		{
-			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$setting_type} = 0");
-			continue;		 	
-		}
-		elseif ((in_array($setting_type, $restrictions)) && (int)$context['spamblocker'][$setting_type] == 1)
-		{
-			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$setting_type} = 1");
-			continue;		 	
-		}
-		elseif (($setting_type == 'enable_mod') && (int)$context['spamblocker']['enable_mod'] == 2)	
-		{
-			$setArray['spamBlocker_enable'] = 1;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_enable'] = 1;	
-			continue;
-		}
-		elseif (($setting_type == 'enable_mod') && (int)$context['spamblocker']['enable_mod'] == 1)	
-		{
-			$setArray['spamBlocker_enable'] = 2;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_enable'] = 2;	
-			continue;
-		}
-		elseif (($setting_type == 'enable_sfs') && (int)$context['spamblocker']['enable_sfs'] == 2)	
-		{				
-			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$setting_type} = 1");
-			continue;
-		}
-		elseif (($setting_type == 'enable_akismet') && (int)$context['spamblocker']['enable_akismet'] == 2)	
-		{				
-			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$setting_type} = 1");
-			continue;
-		}			
-		elseif (($setting_type == 'enable_honeypot') && (int)$context['spamblocker']['enable_honeypot'] == 2)	
-		{				
-			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$setting_type} = 1");
-			continue;
-		}
-		elseif (($setting_type == 'enable_spamhaus') && (int)$context['spamblocker']['enable_spamhaus'] == 2)	
-		{				
-			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$setting_type} = 1");
-			continue;
-		}	
-		elseif (($setting_type == 'enable_errorlog') && (int)$context['spamblocker']['enable_errorlog'] == 2)	
-		{												
-			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET $setting_type = 1");
-			continue;
-		}
-		elseif (($setting_type == 'enable_email') && (int)$context['spamblocker']['enable_email'] == 2)	
-		{				
-			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$setting_type} = 1");
-			continue;
-		}	
-		elseif (($setting_type == 'enable_pass') && (int)$context['spamblocker']['enable_pass'] == 2)	
-		{				
-			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$setting_type} = 1");
-			continue;
-		}
-		elseif (($setting_type == 'enable_reset') && (int)$context['spamblocker']['enable_reset'] == 2)	
-		{				
-			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$setting_type} = 1");
-			continue;
-		}
-		elseif (($setting_type == 'enable_delBlacklist') && (int)$context['spamblocker']['enable_delBlacklist'] == 2)	
-		{				
-			spamBlockerClearBlacklist();
-			$_SESSION['spamBlockerConfig_Msg'] = $txt['spamBlockerClearBlacklistMsg'];
-			continue;
-		}	
-		elseif (($setting_type == 'enable_expired') && (int)$context['spamblocker']['enable_expired'] == 2)	
-		{	
-			/* Delete expired bans */			
-			$now = time() + 86400;
-			$datum = array();
-			$member_id = array();
-			$ban_group = array();
-			$columns = array('id_ban_group', 'expire_time', 'reason', 'notes', 'id_member');
-
-			$request = $smcFunc['db_query']('', "
-						SELECT gp.id_ban_group, gp.expire_time, gp.reason, gp.notes, item.id_member
-						FROM {db_prefix}ban_groups AS gp
-						LEFT JOIN {db_prefix}ban_items AS item ON (item.id_ban_group = gp.id_ban_group)
-						WHERE {int:now} > gp.expire_time",array('now' => $now));
+		elseif ($key == 'ban_full')
+		{			
+			$val = ((int)$value == 1) ? 1 : 0;
+			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$key} = {int:val}", array('val' => $val));
+			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET ban_register = 0");
+			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET ban_login = 0");
+			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET ban_post = 0");
 			
-			while ($row = $smcFunc['db_fetch_assoc']($request))
-			{
-				foreach ($columns as $column)
-					$data[$column] = $row[$column];
-                           	
-				$datum[] = $data;
-			}
-			$smcFunc['db_free_result']($request);
-
-			foreach ($datum as $key => $check_data)
-			{
-				if (strpos($check_data['notes'], 'spamBlocker_id-') !== false)
-				{
-					$member_id[] = $check_data['id_member'];
-					$ban_group[] = $check_data['id_ban_group'];
-				}
-			}
-
-			foreach ($member_id as $id_member)
-			{
-				if ((int)$id_member > 0 && (int)$context['spamblocker']['delete_member'] == 1)
-					spamBlockerDeleteMember($member_id);
-			}
-
-			foreach ($ban_group as $group)
-			{
-				$request = $smcFunc['db_query']('', "DELETE FROM {db_prefix}ban_groups WHERE id_ban_group = {int:ban}",array('ban' => (int)$group));
-				$request = $smcFunc['db_query']('', "DELETE FROM {db_prefix}ban_items WHERE id_ban_group = {int:ban}",array('ban' => (int)$group));
-				$request = $smcFunc['db_query']('', "DELETE FROM {db_prefix}spamblocker_blacklist WHERE id_ban_group = {int:ban}",array('ban' => (int)$group));
-			}
-										
-			$_SESSION['spamBlockerConfig_Msg'] = $txt['spamBlockerIP_BlacklistExpired'];	
-			continue;
-		}								
-		elseif (($setting_type == 'enable_emend') && (int)$context['spamblocker']['enable_emend'] == 2)	
-		{
-			/* Emend Blacklist */						
-			$_SESSION['spamBlockerConfig_Msg'] = spamBlockerEmendBlacklist($txt['spamBlockerIP_BlacklistEmend']);
-				
-			/* Optimize all spamblocker and ban tables */
-			$result1 = $smcFunc['db_query']('', "OPTIMIZE TABLE {db_prefix}spamblocker_blacklist");
-			$smcFunc['db_free_result']($result1);
-			$result2 = $smcFunc['db_query']('', "OPTIMIZE TABLE {db_prefix}spamblocker_whitelist");
-			$smcFunc['db_free_result']($result2);
-			$result3 = $smcFunc['db_query']('', "OPTIMIZE TABLE {db_prefix}spamblocker_settings");
-			$smcFunc['db_free_result']($result3);
-			$result4 = $smcFunc['db_query']('', "OPTIMIZE TABLE {db_prefix}ban_groups");
-			$smcFunc['db_free_result']($result4);
-			$result5 = $smcFunc['db_query']('', "OPTIMIZE TABLE {db_prefix}ban_items");
-			$smcFunc['db_free_result']($result5);
-				
-			continue;
-		}				
-		elseif (($setting_type == 'ban_option') && (int)$context['spamblocker']['ban_option'] == 2)	
-		{				
-			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$setting_type} = 1");			
-			continue;
-		}
-		elseif (($setting_type == 'enable_default') && (int)$context['spamblocker']['enable_default'] == 2)	
-		{				
-			$_SESSION['spamBlockerConfig_Msg'] = spamBlockerDefaultReset();			
-			continue;
-		}
-		elseif (($setting_type == 'smf_error') && (int)$context['spamblocker']['smf_error'] == 2)	
-		{
-			$setArray['spamBlocker_smfError'] = 1;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_smfError'] = 1;	
-			continue;
-		}
-		elseif (($setting_type == 'smf_error') && (int)$context['spamblocker']['smf_error'] == 1)	
-		{
-			$setArray['spamBlocker_smfError'] = 2;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_smfError'] = 2;	
-			continue;
-		}
-		elseif (($setting_type == 'report_errs') && (int)$context['spamblocker']['report_errs'] == 2)	
-		{
-			$setArray['spamBlocker_report_errs'] = 1;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_report_errs'] = 1;	
-			continue;
-		}
-		elseif (($setting_type == 'report_errs') && (int)$context['spamblocker']['report_errs'] == 1)	
-		{
-			$setArray['spamBlocker_report_errs'] = 2;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_report_errs'] = 2;	
-			continue;
-		}
-		elseif (($setting_type == 'hide_members') && (int)$context['spamblocker']['hide_members'] == 2)	
-		{
-			$setArray['spamBlocker_hideMembers'] = 1;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_hideMembers'] = 1;		
-			continue;
-		}
-		elseif (($setting_type == 'hide_members') && (int)$context['spamblocker']['hide_members'] == 1)	
-		{
-			$setArray['spamBlocker_hideMembers'] = 2;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_hideMembers'] = 2;		
-			continue;
-		}
-		elseif (($setting_type == 'enable_post') && (int)$context['spamblocker']['enable_post'] == 2)	
-		{
-			$setArray['spamBlocker_akismetPost'] = 1;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_akismetPost'] = 1;		
-			continue;
-		}
-		elseif (($setting_type == 'enable_post') && (int)$context['spamblocker']['enable_post'] == 1)	
-		{
-			$setArray['spamBlocker_akismetPost'] = 2;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_akismetPost'] = 2;		
-			continue;
-		}
-		elseif (($setting_type == 'enable_postSFS') && (int)$context['spamblocker']['enable_postSFS'] == 2)	
-		{
-			$setArray['spamBlocker_PostSFS'] = 1;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_PostSFS'] = 1;		
-			continue;
-		}
-		elseif (($setting_type == 'enable_postSFS') && (int)$context['spamblocker']['enable_postSFS'] == 1)	
-		{
-			$setArray['spamBlocker_PostSFS'] = 2;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_PostSFS'] = 2;		
-			continue;
-		}
-		elseif (($setting_type == 'enable_postDisplay') && (int)$context['spamblocker']['enable_postDisplay'] == 2)	
-		{
-			$setArray['spamBlocker_PostDisplay'] = 1;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_PostDisplay'] = 1;		
-			continue;
-		}
-		elseif (($setting_type == 'enable_postDisplay') && (int)$context['spamblocker']['enable_postDisplay'] == 1)	
-		{
-			$setArray['spamBlocker_PostDisplay'] = 2;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_PostDisplay'] = 2;		
-			continue;
-		}
-		elseif (($setting_type == 'enable_postFilter') && (int)$context['spamblocker']['enable_postFilter'] == 2)	
-		{
-			$setArray['spamBlocker_PostFilter'] = 1;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_PostFilter'] = 1;			
-			continue;
-		}
-		elseif (($setting_type == 'enable_postFilter') && (int)$context['spamblocker']['enable_postFilter'] == 1)	
-		{
-			$setArray['spamBlocker_PostFilter'] = 2;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_PostFilter'] = 2;		
-			continue;
-		}
-		elseif (($setting_type == 'enable_errs') && (int)$context['spamblocker']['enable_errs'] == 2)	
-		{
-			$setArray['spamBlocker_conn_errs'] = 1;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_conn_errs'] = 1;		
-			continue;
-		}
-		elseif (($setting_type == 'enable_errs') && (int)$context['spamblocker']['enable_errs'] == 1)	
-		{
-			$setArray['spamBlocker_conn_errs'] = 2;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_conn_errs'] = 2;		
-			continue;
-		}
-		elseif (($setting_type == 'enable_redirect') && (int)$context['spamblocker']['enable_redirect'] == 2)	
-		{
-			$setArray['spamBlocker_enableRedirect'] = 1;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_enableRedirect'] = 1;		
-			continue;
-		}
-		elseif (($setting_type == 'enable_redirect') && (int)$context['spamblocker']['enable_redirect'] == 1)	
-		{
-			$setArray['spamBlocker_enableRedirect'] = 2;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_enableRedirect'] = 2;		
-			continue;
-		}
-		elseif (($setting_type == 'delete_members') && (int)$context['spamblocker']['delete_members'] == 2)	
-		{
-			$setArray['spamBlocker_deleteMembers'] = 1;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_deleteMembers'] = 1;		
-			continue;
-		}
-		elseif (($setting_type == 'delete_members') && (int)$context['spamblocker']['delete_members'] == 1)	
-		{
-			$setArray['spamBlocker_deleteMembers'] = 2;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_deleteMembers'] = 2;		
-			continue;
-		}
-		elseif (($setting_type == 'redirect_path') && filter_var($context['spamblocker']['redirect_path'], FILTER_VALIDATE_URL) !== false)	
-		{			
-			$setArray['spamBlocker_redirectPath'] = cleanSpamBlockerRedirect($context['spamblocker']['redirect_path']);
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_redirectPath'] = cleanSpamBlockerRedirect($context['spamblocker']['redirect_path']);		
-			continue;
-		}
-		elseif (($setting_type == 'redirect_path') && filter_var($context['spamblocker']['redirect_path'], FILTER_VALIDATE_URL) === false)	
-		{			
-			$setArray['spamBlocker_redirectPath'] = $boardurl;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_redirectPath'] = $boardurl;		
-			continue;
-		}
-		elseif (($setting_type == 'akismet_key') && $context['spamblocker']['akismet_key'])	
-		{
-			$setArray['spamBlocker_akismetKey'] = cleanSpamBlockerQuery($context['spamblocker']['akismet_key']);
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_akismetKey'] = cleanSpamBlockerQuery($context['spamblocker']['akismet_key']);		
-			continue;
-		}
-		elseif (($setting_type == 'sfs_key') && $context['spamblocker']['sfs_key'])	
-		{
-			$setArray['spamBlocker_sfsKey'] = cleanSpamBlockerQuery($context['spamblocker']['sfs_key']);
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_sfsKey'] = cleanSpamBlockerQuery($context['spamblocker']['sfs_key']);		
-			continue;
-		}
-		elseif (($setting_type == 'honeypot_key') && $context['spamblocker']['honeypot_key'])	
-		{
-			$setArray['spamBlocker_honeypotKey'] = cleanSpamBlockerQuery($context['spamblocker']['honeypot_key']);
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_honeypotKey'] = cleanSpamBlockerQuery($context['spamblocker']['honeypot_key']);		
-			continue;
-		}
-		elseif (($setting_type == 'honeypot_threat') && (int)$context['spamblocker']['honeypot_threat'] == 0)	
-		{
-			$setArray['spamBlocker_honeypotThreat'] = 0;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_honeypotThreat'] = 0;
-			continue;
-		}
-		elseif (($setting_type == 'honeypot_threat') && $context['spamblocker']['honeypot_threat'])	
-		{
-			$HoneypotThreat = (int)$context['spamblocker']['honeypot_threat'];
-			if ($HoneypotThreat < 0 || $HoneypotThreat > 255)
-				$HoneypotThreat = 1;
-			$setArray['spamBlocker_honeypotThreat'] = cleanSpamBlockerQuery($HoneypotThreat);
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_honeypotKey'] = cleanSpamBlockerQuery($HoneypotThreat);		
 			continue;
 		}		
-		elseif (($setting_type == 'honeypot_type') && $context['spamblocker']['honeypot_type'])	
+		elseif ($key == 'enable_delBlacklist')
 		{
-			$honeypotType = array_unique(explode(',', $context['spamblocker']['honeypot_type']));
+			$val = ($value == 2) ? 2 : 1;
+			if ($val == 2)
+			{
+				spamBlockerClearBlacklist();
+				$_SESSION['spamBlockerConfig_Msg'] = $txt['spamBlockerClearBlacklistMsg'];			
+			}
+			continue;
+		}	
+		elseif ($key == 'enable_default')
+		{
+			$val = ($value == 2) ? 2 : 1;
+			if ($val == 2)
+				$_SESSION['spamBlockerConfig_Msg'] = spamBlockerDefaultReset();					
+			continue;
+		}	
+		elseif ($key == 'enable_expired')
+		{
+			$val = ($value == 2) ? 2 : 1;
+			if ($val == 2)
+			{
+				/* Delete expired bans */			
+				$now = time() + 86400;
+				$datum = array();
+				$member_id = array();
+				$ban_group = array();
+				$columns = array('id_ban_group', 'expire_time', 'reason', 'notes', 'id_member');
+				$request = $smcFunc['db_query']('', "
+					SELECT gp.id_ban_group, gp.expire_time, gp.reason, gp.notes, item.id_member
+					FROM {db_prefix}ban_groups AS gp
+					LEFT JOIN {db_prefix}ban_items AS item ON (item.id_ban_group = gp.id_ban_group)
+					WHERE {int:now} > gp.expire_time",array('now' => $now));
+			
+				while ($row = $smcFunc['db_fetch_assoc']($request))
+				{
+					foreach ($columns as $column)
+						$data[$column] = $row[$column];
+                          	
+					$datum[] = $data;
+				}
+				$smcFunc['db_free_result']($request);
+				foreach ($datum as $key => $check_data)
+				{
+					if (strpos($check_data['notes'], 'spamBlocker_id-') !== false)
+					{
+						$member_id[] = $check_data['id_member'];
+						$ban_group[] = $check_data['id_ban_group'];
+					}
+				}
+
+				foreach ($member_id as $id_member)
+				{
+					if ((int)$id_member > 0 && (int)$context['spamblocker']['delete_member'] == 1)
+						spamBlockerDeleteMember($member_id);
+				}
+
+				foreach ($ban_group as $group)
+				{
+					$request = $smcFunc['db_query']('', "DELETE FROM {db_prefix}ban_groups WHERE id_ban_group = {int:ban}",array('ban' => (int)$group));
+					$request = $smcFunc['db_query']('', "DELETE FROM {db_prefix}ban_items WHERE id_ban_group = {int:ban}",array('ban' => (int)$group));
+					$request = $smcFunc['db_query']('', "DELETE FROM {db_prefix}spamblocker_blacklist WHERE id_ban_group = {int:ban}",array('ban' => (int)$group));
+				}
+										
+				$_SESSION['spamBlockerConfig_Msg'] = $txt['spamBlockerIP_BlacklistExpired'];
+			}
+			continue;
+		}
+		elseif ($key == 'enable_emend')
+		{
+			$val = ($value == 2) ? 2 : 1;
+			if ($val == 2)
+			{
+				/* Emend Blacklist */						
+				$_SESSION['spamBlockerConfig_Msg'] = spamBlockerEmendBlacklist($txt['spamBlockerIP_BlacklistEmend']);
+				
+				/* Optimize all spamblocker and ban tables */
+				$result1 = $smcFunc['db_query']('', "OPTIMIZE TABLE {db_prefix}spamblocker_blacklist");
+				$smcFunc['db_free_result']($result1);
+				$result2 = $smcFunc['db_query']('', "OPTIMIZE TABLE {db_prefix}spamblocker_whitelist");
+				$smcFunc['db_free_result']($result2);
+				$result3 = $smcFunc['db_query']('', "OPTIMIZE TABLE {db_prefix}spamblocker_settings");
+				$smcFunc['db_free_result']($result3);
+				$result4 = $smcFunc['db_query']('', "OPTIMIZE TABLE {db_prefix}ban_groups");
+				$smcFunc['db_free_result']($result4);
+				$result5 = $smcFunc['db_query']('', "OPTIMIZE TABLE {db_prefix}ban_items");
+				$smcFunc['db_free_result']($result5);				
+				$result6 = $smcFunc['db_query']('', "TRUNCATE TABLE {db_prefix}spamblocker_cache");
+			}
+			continue;
+		}
+		elseif ($key == 'redirect_path')
+		{
+			if (filter_var($context['spamblocker']['redirect_path'], FILTER_VALIDATE_URL) !== false)
+				$val = cleanSpamBlockerRedirect($value);
+			else
+				$val = $boardurl;
+				
+			$setArray['spamBlocker_redirectPath'] = $val;
+			updateSettings($setArray);			
+			$modSettings['spamBlocker_redirectPath'] = $val;		
+			continue;
+		}
+		elseif ($key == 'honeypot_type')
+		{
+			$honeypotType = array_unique(explode(',', $value));
 			sort($honeypotType);
 			$types = '';
 			foreach ($honeypotType as $honeypot)
 			{
 				if ((int)$honeypot < 0 || (int)$honeypot > 255)
 					continue;
-				
+			
 				$types .= (int)$honeypot . ', ';	
 			}
-					
+				
 			$types = rtrim($types, ', ');
 			$setArray['spamBlocker_honeypotType'] = $types;			
 			updateSettings($setArray);			
-			$modSettings['spamBlocker_honeypotType'] = $types;		
+			$modSettings['spamBlocker_honeypotType'] = $types;
 			continue;
 		}
-		elseif (($setting_type == 'text_filter') && $context['spamblocker']['text_filter'])	
+		elseif ($key == 'text_filter')
 		{
-			$words = cleanSpamBlockerInput($context['spamblocker']['text_filter']);				
+			$words = cleanSpamBlockerInput($value);				
 			$setArray['spamBlocker_filteredText'] = $words;			
 			updateSettings($setArray);			
-			$modSettings['spamBlocker_filteredText'] = $words;		
-			continue;
-		}
-		elseif (($setting_type == 'honeypot_type') && (int)$context['spamblocker']['honeypot_type'] == 0)	
-		{
-			$setArray['spamBlocker_honeypotType'] = 0;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_honeypotType'] = 0;
-			continue;
-		}
-		elseif (($setting_type == 'word_count') && (int)$context['spamblocker']['word_count'] > 0)	
-		{
-			$setArray['spamBlocker_wordCount'] = (int)$context['spamblocker']['word_count'];
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_wordCount'] = (int)$context['spamblocker']['word_count'];
-			continue;
-		} 
-		elseif (($setting_type == 'akismet_count') && (int)$context['spamblocker']['akismet_count'] == 0)	
-		{
-			$setArray['spamBlocker_postCount'] = 0;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_postCount'] = 0;
-			continue;
-		} 
-		elseif (($setting_type == 'akismet_count') && $context['spamblocker']['akismet_count'])	
-		{
-			$setArray['spamBlocker_postCount'] = abs((int)$context['spamblocker']['akismet_count']);
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_postCount'] = abs((int)$context['spamblocker']['akismet_count']);
-			continue;
-		}
-		elseif (($setting_type == 'links_count') && (int)$context['spamblocker']['links_count'] == 0)	
-		{
-			$setArray['spamBlocker_linksCount'] = 0;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_linksCount'] = 0;
-			continue;
-		} 
-		elseif (($setting_type == 'links_count') && $context['spamblocker']['links_count'])	
-		{
-			$setArray['spamBlocker_linksCount'] = abs((int)$context['spamblocker']['links_count']);
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_linksCount'] = abs((int)$context['spamblocker']['links_count']);
-			continue;
-		}
-		elseif (($setting_type == 'images_count') && (int)$context['spamblocker']['images_count'] == 0)	
-		{
-			$setArray['spamBlocker_imagesCount'] = 0;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_imagesCount'] = 0;
-			continue;
-		} 
-		elseif (($setting_type == 'images_count') && $context['spamblocker']['images_count'])	
-		{
-			$setArray['spamBlocker_imagesCount'] = abs((int)$context['spamblocker']['images_count']);
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_imagesCount'] = abs((int)$context['spamblocker']['images_count']);
-			continue;
-		}
-		elseif (($setting_type == 'chars_low_count') && (int)$context['spamblocker']['chars_low_count'] == 0)	
-		{
-			$setArray['spamBlocker_charsLowCount'] = 1;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_charsLowCount'] = 1;
-			continue;
-		} 
-		elseif (($setting_type == 'chars_low_count') && $context['spamblocker']['chars_low_count'])	
-		{
-			if ((int)$context['spamblocker']['chars_low_count'] < 1)
-				$context['spamblocker']['chars_low_count'] = 1;
-				
-			if ((int)$context['spamblocker']['chars_low_count'] >= (!empty($modSettings['spamBlocker_charsCount']) ? (int)$modSettings['spamBlocker_charsCount'] : 60))
-				$context['spamblocker']['chars_low_count'] = (!empty($modSettings['spamBlocker_charsCount']) ? (int)$modSettings['spamBlocker_charsCount'] : 60) - 1;
-				
-				
-			$setArray['spamBlocker_charsLowCount'] = abs((int)$context['spamblocker']['chars_low_count']);
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_charsLowCount'] = abs((int)$context['spamblocker']['chars_low_count']);
-			continue;
-		}	
-		elseif (($setting_type == 'chars_count') && (int)$context['spamblocker']['chars_count'] == 0)	
-		{
-			$setArray['spamBlocker_charsCount'] = 300;
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_charsCount'] = 300;
-			continue;
-		} 
-		elseif (($setting_type == 'chars_count') && $context['spamblocker']['chars_count'])	
-		{
-			if ((int)$context['spamblocker']['chars_count'] < 60)
-				$context['spamblocker']['chars_count'] = 60;
-				
-			$setArray['spamBlocker_charsCount'] = abs((int)$context['spamblocker']['chars_count']);
-			updateSettings($setArray);			
-			$modSettings['spamBlocker_charsCount'] = abs((int)$context['spamblocker']['chars_count']);
-			continue;
-		}	
-		elseif (($setting_type == 'optimize') && $context['spamblocker']['optimize'])	
-		{
-			$safe_optimize = $txt['spamBlockerOff'];			
-			
-			if ((int)$context['spamblocker']['optimize'] > 49 && (int)$context['spamblocker']['optimize'] < 251)
-				$safe_optimize = $context['spamblocker']['optimize'];				
-			
-			$setArray['spamBlocker_optimizeInt'] = $safe_optimize;
-			updateSettings($setArray);
-			$modSettings['spamBlocker_optimizeInt'] = $safe_optimize;
-			continue;
-		}	
-		elseif ((int)$setting > 1)		
-		{	
-			$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName
-								SET {$setting_type} = 2
-								WHERE `{$db_prefix}$tableName`.`reference` = 1
-								LIMIT 1");			
-			continue;
-		}		
-		else	
-		{																						
-			createSpamBlocker_setting($tableName, $setting_type, $context['spamblocker'][$setting_type]);		
+			$modSettings['spamBlocker_filteredText'] = $words;
 			continue;
 		}			
-	}
+	}	
 				
 	/* START - Read database entries for Spam Blocker settings */	
 	if (!checkFieldSB($tableName,'reference')) 
@@ -810,8 +490,7 @@ function SettingsSpamBlocker()
 	$context['spamblocker']['word_count'] = !empty($modSettings['spamBlocker_wordCount']) ? (int)$modSettings['spamBlocker_wordCount'] : 1;
 	$context['spamblocker']['chars_low_count'] = !empty($modSettings['spamBlocker_charsLowCount']) ? (int)$modSettings['spamBlocker_charsLowCount'] : 1;
 	$context['spamblocker']['delete_members'] = !empty($modSettings['spamBlocker_deleteMembers']) ? (int)$modSettings['spamBlocker_deleteMembers'] : 1;
-	$context['spamblocker']['hide_members'] = !empty($modSettings['spamBlocker_hideMembers']) ? (int)$modSettings['spamBlocker_hideMembers'] : 2;
-	$context['spamblocker']['optimize'] = !empty($modSettings['spamBlocker_optimizeInt']) ? $modSettings['spamBlocker_optimizeInt'] : 'off';
+	$context['spamblocker']['hide_members'] = !empty($modSettings['spamBlocker_hideMembers']) ? (int)$modSettings['spamBlocker_hideMembers'] : 2;	
 	$context['settings_title'] = $txt['spamBlockerSettings'];
 	$context['post_url'] = $scripturl . '?action=admin;area=spamBlocker;sa=spamBlockerSettings;' . $context['session_var'] . '=' . $context['session_id'] . ';save';	
 	$context['sub_template'] = 'spamBlocker_settings_page';	
@@ -840,128 +519,129 @@ function SettingsSpamBlocker()
 		$context['spamblocker']['status'] = 'active';	
 	
 	/* Javascript functions for all the enable/disable toggles */
-	$context['toggle'] = '<script type="text/javascript">	
-	function changeModA(){
-	   document.getElementById("updateMod").innerHTML = spamblocker_enabled;
-	}
-	function changeModB(){
- 	  document.getElementById("updateMod").innerHTML = spamblocker_disabled;
-	}
-	function changeSfsA(){
-	   document.getElementById("updateSfs").innerHTML = spamblocker_enabled;
-	}
-	function changeSfsB(){
- 	  document.getElementById("updateSfs").innerHTML = spamblocker_disabled;
-	}
-	function changeAkismetA(){
-	   document.getElementById("updateAkismet").innerHTML = spamblocker_enabled;
-	}
-	function changeAkismetB(){
- 	  document.getElementById("updateAkismet").innerHTML = spamblocker_disabled;
-	}
-	function changeHoneypotA(){
-	   document.getElementById("updateHoneypot").innerHTML = spamblocker_enabled;
-	}
-	function changeHoneypotB(){
- 	  document.getElementById("updateHoneypot").innerHTML = spamblocker_disabled;
-	}
-	function changeSpamhausA(){
-	   document.getElementById("updateSpamhaus").innerHTML = spamblocker_enabled;
-	}
-	function changeSpamhausB(){
- 	  document.getElementById("updateSpamhaus").innerHTML = spamblocker_disabled;
-	}		
-	function changeEmailA(){
-	   document.getElementById("updateEmail").innerHTML = spamblocker_enabled;
-	}
-	function changeEmailB(){
- 	  document.getElementById("updateEmail").innerHTML = spamblocker_disabled;
-	}	
-	function changePassA(){
-	   document.getElementById("updatePass").innerHTML = spamblocker_enabled;
-	}
-	function changePassB(){
- 	  document.getElementById("updatePass").innerHTML = spamblocker_disabled;
-	}
-	function changeResetA(){
-	   document.getElementById("updateReset").innerHTML = spamblocker_enabled;
-	}
-	function changeResetB(){
- 	  document.getElementById("updateReset").innerHTML = spamblocker_disabled;
-	}
-	function changeBanA(){
-	   document.getElementById("updateBan").innerHTML = spamblocker_enabled;
-	}
-	function changeBanB(){
- 	  document.getElementById("updateBan").innerHTML = spamblocker_disabled;
-	}	
-	function changeErrA(){
-	   document.getElementById("updateErr").innerHTML = spamblocker_enabled;
-	}
-	function changeErrB(){
- 	  document.getElementById("updateErr").innerHTML = spamblocker_disabled;
-	}
-	function changeReportErrA(){
-	   document.getElementById("updateReportErr").innerHTML = spamblocker_enabled;
-	}
-	function changeReportErrB(){
- 	  document.getElementById("updateReportErr").innerHTML = spamblocker_disabled;
-	}
-	function changeSmfErrA(){
-	   document.getElementById("updateSmfErr").innerHTML = spamblocker_enabled;
-	}
-	function changeSmfErrB(){
- 	  document.getElementById("updateSmfErr").innerHTML = spamblocker_disabled;
-	}
-	function changeHideA(){
-	   document.getElementById("updateHide").innerHTML = spamblocker_enabled;
-	}
-	function changeHideB(){
- 	  document.getElementById("updateHide").innerHTML = spamblocker_disabled;
-	}
-	function changeErrsA(){
-	   document.getElementById("updateErrs").innerHTML = spamblocker_enabled;
-	}
-	function changeErrsB(){
- 	  document.getElementById("updateErrs").innerHTML = spamblocker_disabled;
-	}
-	function changePostA(){
-	   document.getElementById("updatePost").innerHTML = spamblocker_enabled;
-	}
-	function changePostB(){
- 	  document.getElementById("updatePost").innerHTML = spamblocker_disabled;
-	}
-	function changePostSFSA(){
-	   document.getElementById("updatePostSFS").innerHTML = spamblocker_enabled;
-	}
-	function changePostSFSB(){
- 	  document.getElementById("updatePostSFS").innerHTML = spamblocker_disabled;
-	}
-	function changePostDisplayA(){
-	   document.getElementById("updatePostDisplay").innerHTML = spamblocker_enabled;
-	}
-	function changePostDisplayB(){
- 	  document.getElementById("updatePostDisplay").innerHTML = spamblocker_disabled;
-	}
-	function changePostFilterA(){
-	   document.getElementById("updatePostFilter").innerHTML = spamblocker_enabled;
-	}
-	function changePostFilterB(){
-	   document.getElementById("updatePostFilter").innerHTML = spamblocker_disabled;
-	}
-	function changeDeleteA(){
-	   document.getElementById("updateDelete").innerHTML = spamblocker_enabled;
-	}
-	function changeDeleteB(){
- 	  document.getElementById("updateDelete").innerHTML = spamblocker_disabled;
-	}
-	function changeRedirectA(){
-	   document.getElementById("updateRedirect").innerHTML = spamblocker_enabled;
-	}
-	function changeRedirectB(){
- 	  document.getElementById("updateRedirect").innerHTML = spamblocker_disabled;
-	}	
-	</script>	
+	$context['toggle'] = '
+	<script type="text/javascript"><!-- // --><![CDATA[	
+		function changeModA(){
+			document.getElementById("updateMod").innerHTML = spamblocker_enabled;
+		}
+		function changeModB(){
+			document.getElementById("updateMod").innerHTML = spamblocker_disabled;
+		}
+		function changeSfsA(){
+			document.getElementById("updateSfs").innerHTML = spamblocker_enabled;
+		}
+		function changeSfsB(){
+			document.getElementById("updateSfs").innerHTML = spamblocker_disabled;
+		}
+		function changeAkismetA(){
+			document.getElementById("updateAkismet").innerHTML = spamblocker_enabled;
+		}
+		function changeAkismetB(){
+			document.getElementById("updateAkismet").innerHTML = spamblocker_disabled;
+		}
+		function changeHoneypotA(){
+			document.getElementById("updateHoneypot").innerHTML = spamblocker_enabled;
+		}
+		function changeHoneypotB(){
+			document.getElementById("updateHoneypot").innerHTML = spamblocker_disabled;
+		}
+		function changeSpamhausA(){
+			document.getElementById("updateSpamhaus").innerHTML = spamblocker_enabled;
+		}
+		function changeSpamhausB(){
+			document.getElementById("updateSpamhaus").innerHTML = spamblocker_disabled;
+		}		
+		function changeEmailA(){
+			document.getElementById("updateEmail").innerHTML = spamblocker_enabled;
+		}
+		function changeEmailB(){
+			document.getElementById("updateEmail").innerHTML = spamblocker_disabled;
+		}	
+		function changePassA(){
+			document.getElementById("updatePass").innerHTML = spamblocker_enabled;
+		}
+		function changePassB(){
+			document.getElementById("updatePass").innerHTML = spamblocker_disabled;
+		}
+		function changeResetA(){
+			document.getElementById("updateReset").innerHTML = spamblocker_enabled;
+		}
+		function changeResetB(){
+			document.getElementById("updateReset").innerHTML = spamblocker_disabled;
+		}
+		function changeBanA(){
+			document.getElementById("updateBan").innerHTML = spamblocker_enabled;
+		}
+		function changeBanB(){
+			document.getElementById("updateBan").innerHTML = spamblocker_disabled;
+		}	
+		function changeErrA(){
+			document.getElementById("updateErr").innerHTML = spamblocker_enabled;
+		}
+		function changeErrB(){
+			document.getElementById("updateErr").innerHTML = spamblocker_disabled;
+		}
+		function changeReportErrA(){
+			document.getElementById("updateReportErr").innerHTML = spamblocker_enabled;
+		}
+		function changeReportErrB(){
+			document.getElementById("updateReportErr").innerHTML = spamblocker_disabled;
+		}
+		function changeSmfErrA(){
+			document.getElementById("updateSmfErr").innerHTML = spamblocker_enabled;
+		}
+		function changeSmfErrB(){
+			document.getElementById("updateSmfErr").innerHTML = spamblocker_disabled;
+		}
+		function changeHideA(){
+			document.getElementById("updateHide").innerHTML = spamblocker_enabled;
+		}
+		function changeHideB(){
+			document.getElementById("updateHide").innerHTML = spamblocker_disabled;
+		}
+		function changeErrsA(){
+			document.getElementById("updateErrs").innerHTML = spamblocker_enabled;
+		}
+		function changeErrsB(){
+			document.getElementById("updateErrs").innerHTML = spamblocker_disabled;
+		}
+		function changePostA(){
+			document.getElementById("updatePost").innerHTML = spamblocker_enabled;
+		}
+		function changePostB(){
+			document.getElementById("updatePost").innerHTML = spamblocker_disabled;
+		}
+		function changePostSFSA(){
+			document.getElementById("updatePostSFS").innerHTML = spamblocker_enabled;
+		}
+		function changePostSFSB(){
+			document.getElementById("updatePostSFS").innerHTML = spamblocker_disabled;
+		}
+		function changePostDisplayA(){
+			document.getElementById("updatePostDisplay").innerHTML = spamblocker_enabled;
+		}
+		function changePostDisplayB(){
+			document.getElementById("updatePostDisplay").innerHTML = spamblocker_disabled;
+		}
+		function changePostFilterA(){
+			document.getElementById("updatePostFilter").innerHTML = spamblocker_enabled;
+		}
+		function changePostFilterB(){
+			document.getElementById("updatePostFilter").innerHTML = spamblocker_disabled;
+		}
+		function changeDeleteA(){
+			document.getElementById("updateDelete").innerHTML = spamblocker_enabled;
+		}
+		function changeDeleteB(){
+			document.getElementById("updateDelete").innerHTML = spamblocker_disabled;
+		}
+		function changeRedirectA(){
+			document.getElementById("updateRedirect").innerHTML = spamblocker_enabled;
+		}
+		function changeRedirectB(){
+			document.getElementById("updateRedirect").innerHTML = spamblocker_disabled;
+		}	
+	// ]]></script>	
 	<script type="text/javascript"><!-- // --><![CDATA[
 		var zUpdateStatus = function ()
 		{	
@@ -971,8 +651,9 @@ function SettingsSpamBlocker()
 			document.getElementById("ban_login").disabled = document.getElementById("ban_full").checked;
 		}
 		addLoadEvent(zUpdateStatus);
-		// ]]></script>'; 	
-	$context['spamBlocker_confirm'] = '<script type="text/javascript">
+	// ]]></script>'; 	
+	$context['spamBlocker_confirm'] = '
+	<script type="text/javascript"><!-- // --><![CDATA[
 		function confirmSubmit()
 		{
 			var agree=confirm("'.$txt['spamBlocker_confirm'].'");
@@ -986,7 +667,7 @@ function SettingsSpamBlocker()
 			for (i = 0; i < field.length; i++)
 				field[i].checked = false ;
 		}
-	</script>';		
+	// ]]></script>';		
 		
 	loadTemplate('SpamBlockerAdmin');	
 }
@@ -1084,7 +765,8 @@ function WhitelistSpamBlocker()
 	$context['settings_title'] = $txt['spamBlockerSettings'];
 	$context['post_url'] = $scripturl . '?action=admin;area=spamBlocker;sa=spamBlockerWhitelist;' . $context['session_var'] . '=' . $context['session_id'] . ';save';	
 	$context['sub_template'] = 'spamBlocker_whitelist_page';	
-	$context['spamBlocker_confirm'] = '<script type="text/javascript">
+	$context['spamBlocker_confirm'] = '
+	<script type="text/javascript"><!-- // --><![CDATA[
 		function confirmSubmit()
 		{
 			var agree=confirm("'.$txt['spamBlocker_confirm'].'");
@@ -1098,15 +780,17 @@ function WhitelistSpamBlocker()
 			for (i = 0; i < field.length; i++)
 				field[i].checked = false ;
 		}
-	</script>';			
+	// ]]></script>';			
 	
-	$context['spamBlockerAdmin_pages'] = '<script type="text/javascript"><!--
-        var pager = new Pager("spamblocker_whitelist", 20); 
-        pager.init(); 
-        pager.showPageNav("pager", "WhitelistPagePosition"); 
-        pager.showPage(1);
+	$context['spamBlockerAdmin_pages'] = '
+	<script type="text/javascript"><!--
+		var pager = new Pager("spamblocker_whitelist", 20); 
+		pager.init(); 
+		pager.showPageNav("pager", "WhitelistPagePosition"); 
+		pager.showPage(1);
   	  //--></script>';	
-	$context['spamBlockerCheckAll'] = '<script type="text/javascript">
+	$context['spamBlockerCheckAll'] = '
+	<script type="text/javascript"><!--
 		function checkUncheckAll(theElement)
 		{             
 			var myName = theElement.name +"ete[]";
@@ -1117,7 +801,7 @@ function WhitelistSpamBlocker()
 					e.checked = theElement.checked;
 			}
 		}
-		</script>';
+	// ]]></script>';
 	  
 	loadTemplate('SpamBlockerWhitelist');	
 }
@@ -1257,7 +941,8 @@ function BlacklistSpamBlocker()
 	$context['settings_title'] = $txt['spamBlockerSettings'];
 	$context['post_url'] = $scripturl . '?action=admin;area=spamBlocker;sa=spamBlockerBlacklist;' . $context['session_var'] . '=' . $context['session_id'] . ';save';	
 	$context['sub_template'] = 'spamBlocker_blacklist_page';	
-	$context['spamBlocker_confirm'] = '<script type="text/javascript">
+	$context['spamBlocker_confirm'] = '
+	<script type="text/javascript"><!-- // --><![CDATA[
 		function confirmSubmit()
 		{
 			var agree=confirm("'.$txt['spamBlocker_confirm'].'");
@@ -1271,16 +956,18 @@ function BlacklistSpamBlocker()
 			for (i = 0; i < field.length; i++)
 				field[i].checked = false ;
 		}
-	</script>';		
+	// ]]></script>';		
 	
-	$context['spamBlockerAdmin_pages'] = '<script type="text/javascript"><!--
-        var pager = new Pager("spamblocker_blacklist", 10); 
-        pager.init(); 
-        pager.showPageNav("pager", "BlacklistPagePosition"); 
-        pager.showPage(1);
-  	  //--></script>';	
+	$context['spamBlockerAdmin_pages'] = '
+	<script type="text/javascript"><!--
+		var pager = new Pager("spamblocker_blacklist", 10); 
+		pager.init(); 
+		pager.showPageNav("pager", "BlacklistPagePosition"); 
+		pager.showPage(1);
+	//--></script>';	
 	  
-	$context['spamBlockerCheckAll'] = '<script type="text/javascript">
+	$context['spamBlockerCheckAll'] = '
+	<script type="text/javascript"><!-- // --><![CDATA[
 		function checkUncheckAll(theElement)
 		{             
 			var myName = theElement.name +"ete[]";
@@ -1291,7 +978,7 @@ function BlacklistSpamBlocker()
 					e.checked = theElement.checked;
 			}
 		}
-		</script>';	    
+	//--></script>';	    
 	  
 	loadTemplate('SpamBlockerBlacklist');	
 }
