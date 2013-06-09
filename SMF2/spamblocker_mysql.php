@@ -36,88 +36,109 @@ $columns = array(
 		'ban_login',
 		'expiration',
 		'expire_time'		
-		);
+	);
 
 $defaults = array(1,'Access denied.','SpamBlocker IP Ban',2,1,1,1,1,1,1,1,0,0,1,0,1,30);	
 $table = 'spamblocker_settings';
 $new_columnsTypes = array(
                           'spamblocker_settings' => array (
-						'int(10) unsigned NOT NULL AUTO_INCREMENT',
-						'varchar(255) NOT NULL',
-						'varchar(255) NOT NULL',
-						'int(10) unsigned NOT NULL default 0',
-						'int(10) unsigned NOT NULL default 0',
-						'int(10) unsigned NOT NULL default 0',
-						'int(10) unsigned NOT NULL default 0',
-						'int(10) unsigned NOT NULL default 0',
-						'int(10) unsigned NOT NULL default 0',
-						'int(10) unsigned NOT NULL default 0',
-						'int(10) unsigned NOT NULL default 0',
-						'int(10) unsigned NOT NULL default 1',
-						'int(10) unsigned NOT NULL default 0',
-						'int(10) unsigned NOT NULL default 0',
-						'int(10) unsigned NOT NULL default 0',
-						'int(10) unsigned NOT NULL default 0',
-						'int(10) unsigned NOT NULL default 0',
-						'int(10) unsigned NOT NULL default 0'
-						)
-					);	
+				'int(10) unsigned NOT NULL AUTO_INCREMENT',
+				'varchar(255) NOT NULL',
+				'varchar(255) NOT NULL',
+				'int(10) unsigned NOT NULL default 0',
+				'int(10) unsigned NOT NULL default 0',
+				'int(10) unsigned NOT NULL default 0',
+				'int(10) unsigned NOT NULL default 0',
+				'int(10) unsigned NOT NULL default 0',
+				'int(10) unsigned NOT NULL default 0',
+				'int(10) unsigned NOT NULL default 0',
+				'int(10) unsigned NOT NULL default 0',
+				'int(10) unsigned NOT NULL default 1',
+				'int(10) unsigned NOT NULL default 0',
+				'int(10) unsigned NOT NULL default 0',
+				'int(10) unsigned NOT NULL default 0',
+				'int(10) unsigned NOT NULL default 0',
+				'int(10) unsigned NOT NULL default 0',
+				'int(10) unsigned NOT NULL default 0'
+				)
+			);	
 $whitelist = array('ip_low1', 'ip_high1', 'ip_low2', 'ip_high2', 'ip_low3', 'ip_high3', 'ip_low4', 'ip_high4');								
 $blacklist = array('id_ban_group' => 'smallint(5) unsigned NOT NULL default 0', 'id_member' => 'mediumint(8) unsigned NOT NULL default 0');
+$cache = array('ip_1', 'ip_2', 'ip_3', 'ip_4', 'ip_pass', 'ip_time');
 
 /*  Create tables if they do not exist  */
 if (!check_table_existsSB('spamblocker_settings'))
 {
 	$result = $smcFunc['db_query']('', "CREATE TABLE {$db_prefix}{$table} 
                                    (
-									`reference` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-									`user_message` varchar(255) NOT NULL,
-									`error_message` varchar(255) NOT NULL,
-									`enable_errorlog` int(10) unsigned NOT NULL default 0,									
-									`enable_sfs` int(10) unsigned NOT NULL default 0,
-									`enable_akismet` int(10) unsigned NOT NULL default 0,
-									`enable_honeypot` int(10) unsigned NOT NULL default 0,
-									`enable_spamhaus` int(10) unsigned NOT NULL default 0,
-									`enable_email` int(10) unsigned NOT NULL default 0,
-									`enable_pass` int(10) unsigned NOT NULL default 0,
-									`enable_reset` int(10) unsigned NOT NULL default 0,
-									`ban_option` int(10) unsigned NOT NULL default 0,
-									`ban_full` int(10) unsigned NOT NULL default 1,
-									`ban_post` int(10) unsigned NOT NULL default 0,
-									`ban_register` int(10) unsigned NOT NULL default 0,
-									`ban_login` int(10) unsigned NOT NULL default 0,
-									`expiration` int(10) unsigned NOT NULL default 0,
-									`expire_time` int(10) unsigned NOT NULL default 0,
-									PRIMARY KEY (`reference`))");	
+					`reference` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`user_message` varchar(255) NOT NULL,
+					`error_message` varchar(255) NOT NULL,
+					`enable_errorlog` int(10) unsigned NOT NULL default 0,									
+					`enable_sfs` int(10) unsigned NOT NULL default 0,
+					`enable_akismet` int(10) unsigned NOT NULL default 0,
+					`enable_honeypot` int(10) unsigned NOT NULL default 0,
+					`enable_spamhaus` int(10) unsigned NOT NULL default 0,
+					`enable_email` int(10) unsigned NOT NULL default 0,
+					`enable_pass` int(10) unsigned NOT NULL default 0,
+					`enable_reset` int(10) unsigned NOT NULL default 0,
+					`ban_option` int(10) unsigned NOT NULL default 0,
+					`ban_full` int(10) unsigned NOT NULL default 1,
+					`ban_post` int(10) unsigned NOT NULL default 0,
+					`ban_register` int(10) unsigned NOT NULL default 0,
+					`ban_login` int(10) unsigned NOT NULL default 0,
+					`expiration` int(10) unsigned NOT NULL default 0,
+					`expire_time` int(10) unsigned NOT NULL default 0,
+					PRIMARY KEY (`reference`))"
+				);	
 	$request = $smcFunc['db_query']('', "INSERT INTO {db_prefix}spamblocker_settings 
-										(`reference`, `user_message`, `error_message`, `enable_errorlog`, `enable_sfs`, `enable_akismet`, `enable_honeypot`, `enable_spamhaus`, `enable_email`, `enable_pass`, `enable_reset`, `ban_option`, `ban_full`, `ban_post`, `ban_register`, `ban_login`, `expiration`, `expire_time`) 
-											VALUES (1, 'Access denied.', 'SpamBlocker IP Ban', 2, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 30)");									
+					(`reference`, `user_message`, `error_message`, `enable_errorlog`, `enable_sfs`, `enable_akismet`, `enable_honeypot`, `enable_spamhaus`, `enable_email`, `enable_pass`, `enable_reset`, `ban_option`, `ban_full`, `ban_post`, `ban_register`, `ban_login`, `expiration`, `expire_time`) 
+					VALUES (1, 'Access denied.', 'SpamBlocker IP Ban', 2, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 30)"
+				);									
 }
 
 if (!check_table_existsSB('spamblocker_whitelist'))
 {
 	$result = $smcFunc['db_query']('', "CREATE TABLE {$db_prefix}spamblocker_whitelist
                                    (
-									`reference` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,									
-									`ip_low1` tinyint(3) unsigned NOT NULL default 0,
-									`ip_high1` tinyint(3) unsigned NOT NULL default 0,
-									`ip_low2` tinyint(3) unsigned NOT NULL default 0,
-									`ip_high2` tinyint(3) unsigned NOT NULL default 0,
-									`ip_low3` tinyint(3) unsigned NOT NULL default 0,
-									`ip_high3` tinyint(3) unsigned NOT NULL default 0,
-									`ip_low4` tinyint(3) unsigned NOT NULL default 0,
-									`ip_high4` tinyint(3) unsigned NOT NULL default 0,									
-									PRIMARY KEY (`reference`))");							
-}		
+					`reference` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,									
+					`ip_low1` tinyint(3) unsigned NOT NULL default 0,
+					`ip_high1` tinyint(3) unsigned NOT NULL default 0,
+					`ip_low2` tinyint(3) unsigned NOT NULL default 0,
+					`ip_high2` tinyint(3) unsigned NOT NULL default 0,
+					`ip_low3` tinyint(3) unsigned NOT NULL default 0,
+					`ip_high3` tinyint(3) unsigned NOT NULL default 0,
+					`ip_low4` tinyint(3) unsigned NOT NULL default 0,
+					`ip_high4` tinyint(3) unsigned NOT NULL default 0,									
+					PRIMARY KEY (`reference`))");							
+}
+
+
+if (check_table_existsSB('spamblocker_cache'))
+	$request = $smcFunc['db_query']('', "DROP TABLE {db_prefix}spamblocker_cache");
+
+
+$result = $smcFunc['db_query']('', "CREATE TABLE {db_prefix}spamblocker_cache
+                                  (
+				`reference` BIGINT(10) UNSIGNED NOT NULL AUTO_INCREMENT,									
+				`ip_1` tinyint(3) unsigned NOT NULL default 0,
+				`ip_2` tinyint(3) unsigned NOT NULL default 0,
+				`ip_3` tinyint(3) unsigned NOT NULL default 0,
+				`ip_4` tinyint(3) unsigned NOT NULL default 0,
+				`ip_pass` tinyint(3) unsigned NOT NULL default 0,
+				`ip_time` int(10) unsigned NOT NULL default 0,
+				PRIMARY KEY (`reference`))");							
+
 
 if (!check_table_existsSB('spamblocker_blacklist'))
 {
 	$result = $smcFunc['db_query']('', "CREATE TABLE {$db_prefix}spamblocker_blacklist
                                    (
-									`reference` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,									
-									`id_ban_group` smallint(5) unsigned NOT NULL default 0,
-									`id_member` mediumint(8) unsigned NOT NULL default 0,
-									PRIMARY KEY (`reference`))");							
+					`reference` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,									
+					`id_ban_group` smallint(5) unsigned NOT NULL default 0,
+					`id_member` mediumint(8) unsigned NOT NULL default 0,
+					PRIMARY KEY (`reference`))"
+				);							
 }				
 		
 /*  Add extra needed columns into existing tables for columns native to Spam Blocker */
@@ -138,6 +159,14 @@ foreach ($whitelist as $column)
 {
 	if (!checkFieldSB('spamblocker_whitelist',$column))
 		$request = $smcFunc['db_query']('', "ALTER TABLE {$db_prefix}spamblocker_whitelist ADD '{$column}' tinyint(3) unsigned NOT NULL default 0");				
+}
+
+foreach ($cache as $columnC)
+{
+	if ($columnC == 'ip_time' && !checkFieldSB('spamblocker_cache',$columnC))
+		$request = $smcFunc['db_query']('', "ALTER TABLE {$db_prefix}spamblocker_cache ADD '{$columnC}' int(10) unsigned NOT NULL default 0");
+	elseif (!checkFieldSB('spamblocker_cache',$columnC))
+		$request = $smcFunc['db_query']('', "ALTER TABLE {$db_prefix}spamblocker_cache ADD '{$columnC}' tinyint(3) unsigned NOT NULL default 0");
 }
 
 foreach ($blacklist as $columnx => $specs)
@@ -227,7 +256,7 @@ function check_table_existsSB($table)
 function SB_adjust_table()
 {
 	global $smcFunc, $db_name;	
-	$tables = array('spamblocker_settings', 'spamblocker_whitelist', 'spamblocker_blacklist');
+	$tables = array('spamblocker_settings', 'spamblocker_whitelist', 'spamblocker_blacklist', 'spamblocker_cache');
 	
 	/* Query Engine & Collation of the database */
 	$result = $smcFunc['db_query']('', "SHOW TABLE STATUS FROM `$db_name`");
