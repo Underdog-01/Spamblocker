@@ -71,9 +71,7 @@ function spamBlockerRegister($name, $email, $ipUser, $data)
 	/* Delete expired bans matching ip/email and then check the current user/entity */
 	spamBlockerExpired($ip_parts, $email);
 	
-	$spamBlocker = SpamBlockerCheck($email, $ipUser, $name, $checkCache);
-	
-	$optimized_tables = array('spamblocker_blacklist', 'spamblocker_whitelist', 'spamblocker_settings', 'ban_groups', 'ban_items', 'members', 'log_banned', 'log_errors', 'settings');
+	$spamBlocker = SpamBlockerCheck($email, $ipUser, $name, $checkCache);	
 	list($spamcheck, $user_message, $error_message, $enable_errorlog, $enable_mod, $enable_email, $enable_reset, $ban_option, $ban_full, $ban_post, $ban_register, $ban_login, $expiration, $expire_time) = $spamBlocker;
 	$reason = !empty($user_message) ? $user_message : $txt['spamBlockerSpam'];					
 									
@@ -86,17 +84,19 @@ function spamBlockerRegister($name, $email, $ipUser, $data)
 	{		
 		if ($data && $ip !== $txt['spamBlocker_defaultIP'] && $spamcheck == true && !$checkCache)
 		{
-			list($ip_1, $ip_2, $ip_3, $ip_4) = $ip_array;			
-			$request = $smcFunc['db_query']('', "INSERT INTO {db_prefix}spamblocker_cache (`ip_1`, `ip_2`, `ip_3`, `ip_4`, `ip_pass`, `ip_time`) VALUES ('{$ip_1}', '{$ip_2}', '{$ip_3}', '{$ip_4}', 0, '{$time}')");
-			return $spamcheck;
-		}
+			list($ip_1, $ip_2, $ip_3, $ip_4) = $ip_array;
+			$cache = array('ip_1' => $ip_1, 'ip_2' => $ip_2, 'ip_3' => $ip_3, 'ip_4' => $ip_4, 'ip_pass' => 0);
+			cache_put_data('spamBlocker_cache', $cache, 3600);
+			
+			return true;
+		}		
 		elseif ($data)
-			return $spamcheck;		
+			return false;		
 				
 		if ($enable_errorlog == 1)
 			log_error(sprintf($error_message . ' - <span class="remove">' . $ipUser . '</span>', 'IP'));			
 		
-		if ((int)$ban_option == 1 && !$checkCache)
+		if ((int)$ban_option == 1)
 		{			
 			$notes = 'spamBlocker_id-' . time();
 			$key = 0;
@@ -263,11 +263,13 @@ function spamBlockerRegister($name, $email, $ipUser, $data)
 		/* cache_put_data('modSettings', null, 90); */
 		
 		/* The 1 hour cache for a failing entity is only necessary if the member id was created */
+		
 		if (!$checkCache && (int)$ban_option != 1)
 		{
-			list($ip_1, $ip_2, $ip_3, $ip_4) = $ip_array;			
-			$request = $smcFunc['db_query']('', "INSERT INTO {db_prefix}spamblocker_cache (`ip_1`, `ip_2`, `ip_3`, `ip_4`, `ip_pass`, `ip_time`) VALUES ('{$ip_1}', '{$ip_2}', '{$ip_3}', '{$ip_4}', 0, '{$time}')");
-		}	
+			list($ip_1, $ip_2, $ip_3, $ip_4) = $ip_array;
+			$cache = array('ip_1' => $ip_1, 'ip_2' => $ip_2, 'ip_3' => $ip_3, 'ip_4' => $ip_4, 'ip_pass' => 0);
+			cache_put_data('spamBlocker_cache', $cache, 3600);
+		}		
 		
 		/* Goodbye Spammer! */
 		if ((int)$checkDelete != 1)
@@ -278,10 +280,11 @@ function spamBlockerRegister($name, $email, $ipUser, $data)
 			fatal_error($spamBlocker[1], false);	
 	}	
 	
-	/* Create/record 1 hour cache for a passing entity so as not to process it again within that timeframe */ 
-	list($ip_1, $ip_2, $ip_3, $ip_4) = $ip_array;	
-	$request = $smcFunc['db_query']('', "INSERT INTO {db_prefix}spamblocker_cache (`ip_1`, `ip_2`, `ip_3`, `ip_4`, `ip_pass`, `ip_time`) VALUES ('{$ip_1}', '{$ip_2}', '{$ip_3}', '{$ip_4}', 1, '{$time}')");
-	
+	/* Create/record 1 hour cache for a passing entity so as not to process it again within that timeframe */	
+	list($ip_1, $ip_2, $ip_3, $ip_4) = $ip_array;
+	$cache = array('ip_1' => $ip_1, 'ip_2' => $ip_2, 'ip_3' => $ip_3, 'ip_4' => $ip_4, 'ip_pass' => 1);
+	cache_put_data('spamBlocker_cache', $cache, 3600);
+		
 	/* Delete the duplicate guest in the user log (matching ip) */
 	$where = 'ip' . $ipUser;
 	$request = $smcFunc['db_query']('', "DELETE FROM {db_prefix}log_online WHERE session LIKE {string:who}", array('who' => $where));
