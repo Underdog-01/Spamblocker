@@ -64,7 +64,6 @@ $new_columnsTypes = array(
 			);	
 $whitelist = array('ip_low1', 'ip_high1', 'ip_low2', 'ip_high2', 'ip_low3', 'ip_high3', 'ip_low4', 'ip_high4');								
 $blacklist = array('id_ban_group' => 'smallint(5) unsigned NOT NULL default 0', 'id_member' => 'mediumint(8) unsigned NOT NULL default 0');
-$cache = array('ip_1', 'ip_2', 'ip_3', 'ip_4', 'ip_pass', 'ip_time');
 
 /*  Create tables if they do not exist  */
 if (!check_table_existsSB('spamblocker_settings'))
@@ -117,19 +116,6 @@ if (!check_table_existsSB('spamblocker_whitelist'))
 if (check_table_existsSB('spamblocker_cache'))
 	$request = $smcFunc['db_query']('', "DROP TABLE {db_prefix}spamblocker_cache");
 
-
-$result = $smcFunc['db_query']('', "CREATE TABLE {db_prefix}spamblocker_cache
-                                  (
-				`reference` BIGINT(10) UNSIGNED NOT NULL AUTO_INCREMENT,									
-				`ip_1` tinyint(3) unsigned NOT NULL default 0,
-				`ip_2` tinyint(3) unsigned NOT NULL default 0,
-				`ip_3` tinyint(3) unsigned NOT NULL default 0,
-				`ip_4` tinyint(3) unsigned NOT NULL default 0,
-				`ip_pass` tinyint(3) unsigned NOT NULL default 0,
-				`ip_time` int(10) unsigned NOT NULL default 0,
-				PRIMARY KEY (`reference`))");							
-
-
 if (!check_table_existsSB('spamblocker_blacklist'))
 {
 	$result = $smcFunc['db_query']('', "CREATE TABLE {$db_prefix}spamblocker_blacklist
@@ -159,14 +145,6 @@ foreach ($whitelist as $column)
 {
 	if (!checkFieldSB('spamblocker_whitelist',$column))
 		$request = $smcFunc['db_query']('', "ALTER TABLE {$db_prefix}spamblocker_whitelist ADD '{$column}' tinyint(3) unsigned NOT NULL default 0");				
-}
-
-foreach ($cache as $columnC)
-{
-	if ($columnC == 'ip_time' && !checkFieldSB('spamblocker_cache',$columnC))
-		$request = $smcFunc['db_query']('', "ALTER TABLE {$db_prefix}spamblocker_cache ADD '{$columnC}' int(10) unsigned NOT NULL default 0");
-	elseif (!checkFieldSB('spamblocker_cache',$columnC))
-		$request = $smcFunc['db_query']('', "ALTER TABLE {$db_prefix}spamblocker_cache ADD '{$columnC}' tinyint(3) unsigned NOT NULL default 0");
 }
 
 foreach ($blacklist as $columnx => $specs)
@@ -256,7 +234,7 @@ function check_table_existsSB($table)
 function SB_adjust_table()
 {
 	global $smcFunc, $db_name;	
-	$tables = array('spamblocker_settings', 'spamblocker_whitelist', 'spamblocker_blacklist', 'spamblocker_cache');
+	$tables = array('spamblocker_settings', 'spamblocker_whitelist', 'spamblocker_blacklist');
 	
 	/* Query Engine & Collation of the database */
 	$result = $smcFunc['db_query']('', "SHOW TABLE STATUS FROM `$db_name`");
