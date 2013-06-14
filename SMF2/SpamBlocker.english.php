@@ -121,7 +121,7 @@ $txt['spamBlocker_wordsFilter'] = 'Disallowed Text';
 $txt['spamBlockerCharsCount'] = 'Minimum/Maximum Character Input';
 
 /* Spam Blocker Default Filtered Words */
-$txt['spamBlocker_textFilter'] = 'online, adipex, advicer, baccarrat, blackjack, bllogspot, booker, byob, rental, site, rentals, site, carisoprodol, casino, casinos, chatroom, cialis, coolcoolhu, coolhu, credit, card, debt, credit, report, cwas, cyclen, cyclobenzaprine, dating, site, trading, debt, consolidation, debt, consolidation, consultant, discreetordering, duty, free, dutyfree, equityloans, fioricet, flowers, leading, site, freenet, shopping, freenet, gambling, hair, loss, health, insurancedeals, homeequityloans, homefinance, holdem, holdempoker, holdemsoftware, holdemtexasturbowilson, hotel, dealse, site, hotele, hotelse, incest, insurance, quotesdeals, insurancedeals, jrcreations, levitra, macinstruct, mortgage, mortgagequotes, online, gambling, onlinegambling, ottawavalleyag, ownsthis, palm, texas, holdem, game, paxil, penis, pharmacy, phentermine, poker, chip,poze, pussy, rental, ringtones, roulette, shemale, shoes, slot, machine, texas, holdem, thorcarlson, site,tramadol, trim, ultram, valeofglamorganconservatives, viagra, vioxx, xanax, zolus';
+$txt['spamBlocker_textFilter'] = 'baccarrat, blackjack, casinos, gambling, onlinegambling, penis, poker, pussy, roulette, shemale, slot, texas, holdem, viagra';
 
 /* Spam Blocker Reporting Tab */
 $txt['spamBlockerSpamTitle'] = 'Report post as spam';
