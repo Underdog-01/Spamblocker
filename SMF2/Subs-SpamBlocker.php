@@ -131,40 +131,17 @@ function IPspamBlockerCache($ip='255.255.255.254', $pass = 1)
 {
 	global $sourcedir, $smcFunc;	
 	
-	$i = 0; 
 	$ip_array = explode('.', $ip);
-	$hi_low = array();	
-	$ipdata = array('reference', 'ip_1','ip_2','ip_3','ip_4','ip_pass','ip_time');
-
-	$request = $smcFunc['db_query']('', "SELECT reference,ip_1,ip_2,ip_3,ip_4,ip_pass,ip_time FROM {db_prefix}spamblocker_cache ORDER BY reference ASC");
-	while ($val = $smcFunc['db_fetch_assoc']($request))
-	{	
-		foreach ($ipdata as $data)
-		{
-			if (empty($val[$data]))
-				$val[$data] = 0;
-
-			$hi_low[$i][$data] = (int)$val[$data];
-		}
-		$i++;
-	}
-	$smcFunc['db_free_result']($request);
-
-	foreach ($hi_low as $z)
+	$ipdata = cache_get_data('spamBlocker_cache', 3600);	
+	
+	if (!empty($ip_data))
 	{
-		if ((time() > ($z['ip_time'] + 3600)) && ($ip_array[0] == $z['ip_1']) && ($ip_array[1] == $z['ip_2']) && ($ip_array[2] == $z['ip_3']) && ($ip_array[3] == $z['ip_4']))
-		{
-			$request = $smcFunc['db_query']('', "DELETE FROM {db_prefix}spamblocker_cache WHERE reference = {int:ref}",array('ref' => (int)$z['reference']));
-			return false;
-		}
-		elseif (($ip_array[0] == $z['ip_1']) && ($ip_array[1] == $z['ip_2']) && ($ip_array[2] == $z['ip_3']) && ($ip_array[3] == $z['ip_4']) && ($z['ip_pass'] == 1))
+		if (($ip_array[0] == $ip_data['ip_1']) && ($ip_array[1] == $ip_data['ip_2']) && ($ip_array[2] == $ip_data['ip_3']) && ($ip_array[3] == $ip_data['ip_4']) && ($ip_data['ip_pass'] == 1))
 			return true;		
-		elseif (($ip_array[0] == $z['ip_1']) && ($ip_array[1] == $z['ip_2']) && ($ip_array[2] == $z['ip_3']) && ($ip_array[3] == $z['ip_4']) && ($z['ip_pass'] == 0))
-			return 'fail';
-		elseif ((time() > ($z['ip_time'] + 3600)))
-			$request = $smcFunc['db_query']('', "DELETE FROM {db_prefix}spamblocker_cache WHERE reference = {int:ref}",array('ref' => (int)$z['reference']));
-	}	
-				
+		elseif (($ip_array[0] == $ip_data['ip_1']) && ($ip_array[1] == $ip_data['ip_2']) && ($ip_array[2] == $ip_data['ip_3']) && ($ip_array[3] == $ip_data['ip_4']) && ($ip_data['ip_pass'] == 0))
+			return 'fail';			
+	}
+	
 	return false;
 }
 
