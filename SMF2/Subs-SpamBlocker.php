@@ -68,30 +68,10 @@ if (!defined('SMF'))
 		- If $data is true it will only return the database info as an array
 		- Bans the entity from the forum dependent on config settings
 		- Deletes the entity member data if that option was enabled in config
-		
-	void function spamBlockerLinksCount($text, $countLimit, $lengthLimit, $weight)
-		- Initiated while creating/editing posts and topics
-		- Returns a negative value if the preset link limit is exceeded
-		- Returns a positive value if the preset link limit is not exceeded
 	
-	void function spamBlockerImagesCount($text, $countLimit = 2, $lengthLimit = 30, $weight = 1)
-		- Initiated while creating/editing posts and topics
-		- Returns a negative value if the preset image limit is exceeded
-		- Returns a positive value if the preset image limit is not exceeded
-		
-	void function spamBlockerBodyCount($text, $limit = 60, $weight = 2)
-		- Returns the amount of characters in a post
-		
-	void function spamBlockerSplitText($text)
-		- Returns an array of all the separate words contained within $text
-		
 	void function spamBlockerPostFilter($text)
-		- Filters the text for links and illegal words
-		- Returns an array containing true/false for whether the text/links conform to the presets
-		
-	void function cleanSpamBlockerString($string=false)
-		- Sanitizes the post filter words in case they're from the language file
-	
+		- Filters the text for links, images and illegal words
+		- Returns an array containing true/false for whether the text/links conform to the presets	
 	
 */	
 
@@ -699,126 +679,55 @@ function spamBlockerReportPost()
 	redirectexit($scripturl . '?topic='. $spamPost['id_topic']. '.msg'. $spamPost['id_msg']. '#msg'. $spamPost['id_msg']);
 }
 
-function spamBlockerLinksCount($text, $countLimit = 2, $lengthLimit = 30, $weight = 1)
-{
-	preg_match_all('/\b(?:(?:https?|ftp|file)?:\/\/|www\.|ftp\.)[-A-Z0-9+&@#\/%=~_|$?!:,.]*[A-Z0-9+&@#\/%=~_|$]/i', $text, $matches);
-
-	$pts = $countLimit * $weight;
-	$count = count($matches[0]);
-
-	for($i = 0; $i < $count; $i++)
-	{
-		$pts -= $weight;
-		$pts += strlen($matches[0][$i]) > $lengthLimit ? -$weight / 2 : 0;
-	}
-
-	return $pts;
-}
-
-function spamBlockerImagesCount($text, $countLimit = 2, $lengthLimit = 30, $weight = 1)
-{		
-	preg_match_all('#\[img\]([^]]+)\[/img\]#i', $text, $matches);
-	$pts = $countLimit * $weight;
-	$count = count($matches[0]);
-
-	for($i = 0; $i < $count; $i++)
-	{
-		$pts -= $weight;
-		$pts += strlen($matches[0][$i]) > $lengthLimit ? -$weight / 2 : 0;
-	}
-
-	return $pts;
-}
-
-function spamBlockerBodyCount($text, $limit = 60, $weight = 2)
-{
-	return strlen(strip_tags($text)) >= $limit ? $weight : -$weight;
-}
-
-
-function spamBlockerSplitText($text)
-{
-        	
-	$strip = array('\n', '\r', '\t', "\n", "\r", "\t", '`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '-', '=', '{', '}', '[', ']', ':', '"', ';', '\'', '<', '>', '?', ',', '.', '/', '|', '\\');
-	$text = preg_replace('#<a.*href="([^"]*)"[^>]*>([^<]*)</a>#im', '$1 $2', $text);
-	$text = strip_tags($text);
-	$text = str_replace($strip, ' ', $text);
-	$text = mb_strtolower($text, 'UTF-8');
-	$text = explode(' ', $text);
-	$output = array();
-	foreach($text as $word)
-	{
-		if(mb_strlen($word, 'UTF8') <= 3) 
-			continue;
-
-		$output[] = $word;
-	}
-
-	return $output;
-}
-
 function spamBlockerPostFilter($text)
 {
-	global $txt, $modSettings, $user_info;	
-	$count = 0;
-	$links = 0;
-	$images = 0;
-	$chars = 0;
-	$low_chars = 0;
-	$maxPostcount = !empty($modSettings['spamBlocker_postCount']) ? $modSettings['spamBlocker_postCount'] : 0;
-	if ((!empty($modSettings['spamBlocker_PostFilter']) ? (int)$modSettings['spamBlocker_PostFilter'] : 2) != 1 || AllowedTo('spamBlocker_settings'))
-		return array('words' => $count, 'links' => $links, 'images' => $images, 'chars' => $chars, 'low_chars' => $low_chars);	
-	elseif ($user_info['posts'] > $maxPostcount && $maxPostcount != 0)
-		return array('words' => $count, 'links' => $links, 'images' => $images, 'chars' => $chars, 'low_chars' => $low_chars);
+	global $txt, $modSettings, $user_info;
+	$defaults = array(array(), array(), array(), array(), 0, 0, 0, 0, false, false, false);
+	list($links, $images, $plainText, $count, $chars, $low_chars, $strLength, $counter, $linkz, $imagez, $lastText) = $defaults;	
+	$enableFilter = !empty($modSettings['spamBlocker_PostFilter']) ? (int)$modSettings['spamBlocker_PostFilter'] : 2;
+	$maxPostcount = !empty($modSettings['spamBlocker_postCount']) ? $modSettings['spamBlocker_postCount'] : -1;
+	$filteringText = !empty($modSettings['spamBlocker_filteredText']) ? mb_strtolower($modSettings['spamBlocker_filteredText'], "UTF-8") : mb_strtolower($txt['spamBlocker_textFilter'], "UTF-8");
+
+	if ($enableFilter != 1 || AllowedTo('spamBlocker_settings'))
+		return array('words' => 0, 'links' => 0, 'images' => 0, 'chars' => 0, 'low_chars' => 0);	
+	elseif ($user_info['posts'] > $maxPostcount || $maxPostcount == -1)
+		return array('words' => 0, 'links' => 0, 'images' => 0, 'chars' => 0, 'low_chars' => 0);
 	
-	$checkText = spamBlockerSplitText($text);
-	
-	$textFilter = array_unique(explode(',', (!empty($modSettings['spamBlocker_filteredText']) ? $modSettings['spamBlocker_filteredText'] : $txt['spamBlocker_textFilter'])));
-	sort($textFilter);
-	$wordsFilter = '';
-	foreach ($textFilter as $word)
-	{
-		if (strlen(strip_tags($word)) > 2)
-			$wordsFilter .= cleanSpamBlockerString(trim(mb_strtolower($word, "UTF-8"))) . ',';
-	}
-				
-	$wordsFilter = rtrim($wordsFilter, ',');
-	$textFilter = array_unique(explode(',', $wordsFilter));
-	
-	foreach ($checkText as $check)
-	{
-		if (in_array(mb_strtolower($check, "UTF-8"), array_filter(array_map('strtolower', $textFilter))))
-			$count++;
-	}	
+	$dom = new DOMDocument();
+	libxml_use_internal_errors(true);
+	$dom->loadHTML($text);
+	libxml_use_internal_errors(false);	
 		
-	if (spamBlockerLinksCount($text,(!empty($modSettings['spamBlocker_linksCount']) ? (int)$modSettings['spamBlocker_linksCount'] : 0)) < 0)
-		$links = true;
-		
-	if (spamBlockerImagesCount($text,(!empty($modSettings['spamBlocker_imagesCount']) ? (int)$modSettings['spamBlocker_imagesCount'] : 0)) < 0)
-		$images = true;		
+	$plainText = str_word_count(trim(mb_strtolower($dom->textContent), 'UTF-8'), 1);
+	$strLength = strlen(mb_strtolower(trim($dom->textContent), 'UTF-8'));	
+	$textFilter = str_word_count(trim($filteringText), 1);
+	$count = array_intersect($textFilter, $plainText);
 	
-	if (spamBlockerBodyCount(trim($text), (!empty($modSettings['spamBlocker_charsCount']) ? (int)$modSettings['spamBlocker_charsCount'] : 300), 2) > -1)
+	foreach ($plainText as $msgtext)
+	{
+		if ($counter > 0)
+			$lastText = $plainText[$counter - 1];		
+			
+		if (strpos('http://', $msgtext) !== false && strpos('[img', $lastText) === false)
+			$links[] = $msgtext;			
+		elseif (strpos('http://', $msgtext) !== false && strpos('[img', $lastText) !== false)
+			$images[] = $msgtext;		
+			
+		$counter++;	
+	}				
+	
+	if (count($links) && count($links) > (!empty($modSettings['spamBlocker_linksCount']) ? (int)$modSettings['spamBlocker_linksCount'] : 0))
+		$linkz = true;
+		
+	if (count($images) && count($images) > (!empty($modSettings['spamBlocker_imagesCount']) ? (int)$modSettings['spamBlocker_imagesCount'] : 0))
+		$imagez = true;		
+	
+	if ($strLength >= (!empty($modSettings['spamBlocker_charsCount']) ? (int)$modSettings['spamBlocker_charsCount'] : 300))
 		$chars = true;
 	
-	if (spamBlockerBodyCount(trim($text), (!empty($modSettings['spamBlocker_charsLowCount']) ? (int)$modSettings['spamBlocker_charsLowCount'] : 1), 2) < 0)
+	if ($strLength <= (!empty($modSettings['spamBlocker_charsLowCount']) ? (int)$modSettings['spamBlocker_charsLowCount'] : 1))
 		$low_chars = true;
 		
-	return array('words' => $count, 'links' => $links, 'images' => $images, 'chars' => $chars, 'low_chars' => $low_chars);
-}
-
-function cleanSpamBlockerString($string=false)
-{
-	$string = filter_var($string, FILTER_SANITIZE_STRING);
-	$filtered_string = "";
-	$patterns = array("/\&/","/\+/","/delete/i", "/update/i","/union/i","/insert/i","/drop/i","/http/i","/--/i");  
-	$string = preg_replace($patterns, "" , $string);
-	for ($i=0;$i<strlen($string);$i++)
-		{
-			$current_char = substr($string,$i,1);
-			if (ctype_alnum($current_char) == TRUE || $current_char == "_" || $current_char == "/" || $current_char == "-" || $current_char == " ")
-				{$filtered_string .= $current_char;}
-		}  
-	$filtered_string = trim($filtered_string, ' ');		   
-	return $filtered_string;
+	return array('words' => count($count), 'links' => $linkz, 'images' => $imagez, 'chars' => $chars, 'low_chars' => $low_chars);
 }
 ?>
