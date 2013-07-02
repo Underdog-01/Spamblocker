@@ -138,7 +138,7 @@ $txt['spamBlockerNoSafeText'] = 'Reported Safe';
 $txt['spamBlockerNoSafeDetail'] = 'This post has already been reported as safe';
 $txt['spamBlockerReportMsg'] = 'Message Reporting';
 $txt['spamBlockerReport'] = 'Spam Post Logged';
-$txt['spamBlockerSpamDelete'] = '\r\nThis action will also ban the entity as you have that option enabled.';
+$txt['spamBlockerSpamDelete'] = '\r\nThis action can not be reversed and should only be performed when you are certain that the post contains spam content.';
 
 /* Spam Blocker permission language variables */ 
 $txt['permissiongroup_simple_spamBlocker_perms'] = 'Spam Blocker';
