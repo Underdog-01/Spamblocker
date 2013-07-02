@@ -1,10 +1,10 @@
 <?php
 // SMF Version: 2.0.4; Spam Blocker
 /*
- * Spam Blocker was developed for SMF forums c/o Underdog @ http://askusaquestion.net 
- * Copyright 2013 underdog@askusaquestion.net
+ * Spam Blocker was developed for SMF forums c/o Underdog @ http://webdevelop.comli.com
+ * Copyright 2013 underdog@webdevelop.comli.com
  * This software package is distributed under the terms of its Freeware License
- * http://askusaquestion.net/index.php/page=spamblocker_license
+ * http://webdevelop.comli.com/index.php/page=spamblocker_license
 */
 global $helptxt;
 
