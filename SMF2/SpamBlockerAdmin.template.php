@@ -3,14 +3,14 @@
 
 /*
  *	Main admin configuration template file for the Spam Blocker Mod		
- *	c/o Underdog @ http://askusaquestion.net				  
+ *	c/o Underdog @ http://webdevelop.comli.com				  
 */
 
 /*
- * Spam Blocker was developed for SMF forums c/o Underdog @ http://askusaquestion.net	
- * Copyright 2013 Underdog@askusaquestion.net
+ * Spam Blocker was developed for SMF forums c/o Underdog @ http://webdevelop.comli.com	
+ * Copyright 2013 underdog@webdevelop.comli.com
  * This software package is distributed under the terms of its Freeware License
- * http://askusaquestion.net/index.php/page=spamblocker_license
+ * http://webdevelop.comli.com/index.php/page=spamblocker_license
 */
 
 /* Spam Blocker configuration display  */
@@ -21,9 +21,7 @@ function template_spamBlocker_settings_page()
 	loadLanguage('SpamBlocker');
 	
 	$dir = $context['spamblocker_styles']['bg'];
-	$color = $context['spamblocker_styles']['color'];
-	$selected = array($txt['spamBlockerOff'],'50','100','250');
-	$optimize = !empty($modSettings['spamBlocker_optimizeInt']) ? $modSettings['spamBlocker_optimizeInt'] : '50';
+	$color = $context['spamblocker_styles']['color'];	
 	
 	/* Onclick javascript actions  */
 	echo $context['toggle'], $context['spamBlocker_confirm'], $context['spamblocker_enable_disable'];
@@ -955,30 +953,7 @@ function template_spamBlocker_settings_page()
 				<td class="windowbg" style="line-height:0px;border-top: thin solid;" colspan="2">
 					<span>&nbsp;</span>
 				</td>
-			</tr>
-			<tr>
-				<td class="windowbg" style="text-align:left;">
-					<a href="',$scripturl,'?action=helpadmin;help=spamBlocker_sbAutoOptimizeHelp" onclick="return reqWin(this.href);" style="text-decoration:none;">
-						<img style="vertical-align:middle;position:relative;bottom:1px;width:12px;height:12px;" src="'.$settings['default_theme_url'].'/images/admin/spamBlocker-help.gif" alt="?" />
-					</a>
-					', $txt['spamBlocker_optimize'], '
-				</td>
-				<td class="windowbg" style="text-align:left;">
-					<select style="vertical-align:top;" id="optimize" name="optimize[]" onchange="uncheckAll(document.spamblocker_config); this.form.submit();">';
-	foreach ($selected as $select)
-	{		
-		if ($select == $optimize)
-			echo '
-						<option selected>',$select,'</option>';
-		else
-			echo '
-						<option>', $select, '</option>';	
-	}
-	echo '
-					</select>
-				</td>
-			</tr>';
-	
+			</tr>';	
 		
 	echo '
 			<tr>				
