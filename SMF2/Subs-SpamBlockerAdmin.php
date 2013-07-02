@@ -3,15 +3,15 @@
 
 /*
  *	Configuration Sub-Routines file for the Spam Blocker Mod	
- *	c/o Underdog @ http://askusaquestion.net		  
+ *	c/o Underdog @ http://webdevelop.comli.com		  
  *	SMF 2 Version				
 */
 
 /*
- * Spam Blocker was developed for SMF forums c/o Underdog @ http://askusaquestion.net	
- * Copyright 2013 Underdog@askusaquestion.net
+ * Spam Blocker was developed for SMF forums c/o Underdog @ http://webdevelop.comli.com	
+ * Copyright 2013 underdog@webdevelop.comli.com
  * This software package is distributed under the terms of its Freeware License
- * http://askusaquestion.net/index.php/page=spamblocker_license
+ * http://webdevelop.comli.com/index.php/page=spamblocker_license
 */
 
 if (!defined('SMF')) 
@@ -85,10 +85,10 @@ function checkFieldSB($tableName,$columnName)
 	$checkTable = check_table_existsSB($tableName);
 	if ($checkTable == true)
 	{
-		global $db_prefix, $smcFunc;
+		global $smcFunc;
 		$check = false;
 		$checkval = false;
-		$check = $smcFunc['db_query']('', "DESCRIBE {$db_prefix}$tableName $columnName");
+		$check = $smcFunc['db_query']('', "DESCRIBE {db_prefix}$tableName $columnName");
 		$checkval = $smcFunc['db_num_rows']($check);
 		$smcFunc['db_free_result']($check);
 		if ($checkval > 0) 
@@ -101,10 +101,10 @@ function checkFieldSB($tableName,$columnName)
 /*  Check if table exists  */
 function check_table_existsSB($table)
 {
-	global $db_prefix, $smcFunc;
+	global $smcFunc;
 	$check = false;
 	$checkval = false;
-	$check = $smcFunc['db_query']('', "SHOW TABLES LIKE '{$db_prefix}$table'");
+	$check = $smcFunc['db_query']('', "SHOW TABLES LIKE '{db_prefix}$table'");
 	$checkval = $smcFunc['db_num_rows']($check);
 	$smcFunc['db_free_result']($check);
 	if ((int)$checkval > 0)
@@ -116,7 +116,7 @@ function check_table_existsSB($table)
 /*  Update table -> column -> value for spam blocker settings */
 function createSpamBlocker_setting($tableName, $columnName, $valuex) 
 {
-	global $smcFunc, $db_prefix;
+	global $smcFunc;
 	$value = cleanSpamBlockerQuery($valuex);
 		
 	if (empty($tableName) || empty($columnName))
@@ -124,7 +124,7 @@ function createSpamBlocker_setting($tableName, $columnName, $valuex)
 	elseif (empty($value))
 		$value = false;
 		
-	$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET $columnName = '{$value}' WHERE `{$db_prefix}$tableName`.`reference` = 1 LIMIT 1");
+	$request = $smcFunc['db_query']('', "UPDATE {db_prefix}$tableName SET $columnName = '{$value}' WHERE `{db_prefix}$tableName`.`reference` = 1 LIMIT 1");
 }
 
 /* Check ban_list for multiple entires of ban group */
@@ -424,8 +424,7 @@ function spamBlockerDeleteMember($member_id)
 	global $smcFunc, $sourcedir;
 	$users = array((int)$member_id);
 	require_once($sourcedir . '/PersonalMessage.php');
-	require_once($sourcedir . '/ManageAttachments.php');
-	require_once($sourcedir . '/Subs.php');
+	require_once($sourcedir . '/ManageAttachments.php');	
 	
 	/* Protect admins from deletion (just to be safe) */
 	$request = $smcFunc['db_query']('', '
