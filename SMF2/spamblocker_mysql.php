@@ -7,14 +7,14 @@
 */	
 
 /*
- * Spam Blocker was developed for SMF forums c/o Underdog @ http://askusaquestion.net	
- * Copyright 2013 Underdog@askusaquestion.net
+ * Spam Blocker was developed for SMF forums c/o Underdog @ http://webdevelop.comli.com	
+ * Copyright 2013 underdog@webdevelop.comli.com
  * This software package is distributed under the terms of its Freeware License
- * http://askusaquestion.net/index.php/page=spamblocker_license
+ * http://webdevelop.comli.com/index.php/page=spamblocker_license
 */
 
 /*  This file is for mysql setup */
-global $smcFunc, $db_prefix, $scripturl, $sourcedir;
+global $smcFunc, $scripturl, $sourcedir;
 
 $i = 0;
 $columns = array(
@@ -68,7 +68,7 @@ $blacklist = array('id_ban_group' => 'smallint(5) unsigned NOT NULL default 0', 
 /*  Create tables if they do not exist  */
 if (!check_table_existsSB('spamblocker_settings'))
 {
-	$result = $smcFunc['db_query']('', "CREATE TABLE {$db_prefix}{$table} 
+	$result = $smcFunc['db_query']('', "CREATE TABLE {db_prefix}{$table} 
                                    (
 					`reference` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 					`user_message` varchar(255) NOT NULL,
@@ -98,7 +98,7 @@ if (!check_table_existsSB('spamblocker_settings'))
 
 if (!check_table_existsSB('spamblocker_whitelist'))
 {
-	$result = $smcFunc['db_query']('', "CREATE TABLE {$db_prefix}spamblocker_whitelist
+	$result = $smcFunc['db_query']('', "CREATE TABLE {db_prefix}spamblocker_whitelist
                                    (
 					`reference` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,									
 					`ip_low1` tinyint(3) unsigned NOT NULL default 0,
@@ -118,7 +118,7 @@ if (check_table_existsSB('spamblocker_cache'))
 
 if (!check_table_existsSB('spamblocker_blacklist'))
 {
-	$result = $smcFunc['db_query']('', "CREATE TABLE {$db_prefix}spamblocker_blacklist
+	$result = $smcFunc['db_query']('', "CREATE TABLE {db_prefix}spamblocker_blacklist
                                    (
 					`reference` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,									
 					`id_ban_group` smallint(5) unsigned NOT NULL default 0,
@@ -135,7 +135,7 @@ foreach ($columns as $columnName)
 	$columnType = $new_columnsTypes[$table][$i];				   
 	if (!checkFieldSB($table,$columnName))
 	{
-		$request = $smcFunc['db_query']('', "ALTER TABLE {$db_prefix}$table ADD $columnName $columnType");	
+		$request = $smcFunc['db_query']('', "ALTER TABLE {db_prefix}$table ADD $columnName $columnType");	
 		$request = $smcFunc['db_query']('', "UPDATE {db_prefix}$table SET $columnName = '{$defaults[$i]}'");
 	} 		
 	$i++;
@@ -144,17 +144,17 @@ foreach ($columns as $columnName)
 foreach ($whitelist as $column)
 {
 	if (!checkFieldSB('spamblocker_whitelist',$column))
-		$request = $smcFunc['db_query']('', "ALTER TABLE {$db_prefix}spamblocker_whitelist ADD '{$column}' tinyint(3) unsigned NOT NULL default 0");				
+		$request = $smcFunc['db_query']('', "ALTER TABLE {db_prefix}spamblocker_whitelist ADD '{$column}' tinyint(3) unsigned NOT NULL default 0");				
 }
 
 foreach ($blacklist as $columnx => $specs)
 {
 if (!checkFieldSB('spamblocker_blacklist',$columnx))	
-	$request = $smcFunc['db_query']('', "ALTER TABLE {$db_prefix}spamblocker_blacklist ADD {$columnx} {$specs}");	
+	$request = $smcFunc['db_query']('', "ALTER TABLE {db_prefix}spamblocker_blacklist ADD {$columnx} {$specs}");	
 }
 
 if (!checkFieldSB('messages','spamblocker'))
-	$request = $smcFunc['db_query']('', "ALTER TABLE {$db_prefix}messages ADD spamblocker int(10) unsigned NOT NULL default 0");	
+	$request = $smcFunc['db_query']('', "ALTER TABLE {db_prefix}messages ADD spamblocker int(10) unsigned NOT NULL default 0");	
 
 
 /* Insert integration hooks */
@@ -187,10 +187,10 @@ function checkFieldSB($tableName,$columnName)
 {		
 	if (check_table_existsSB($tableName))
 	{
-		global $db_prefix, $smcFunc;
+		global $smcFunc;
 		$check = false;
 		$checkval = false;
-		$check = $smcFunc['db_query']('', "DESCRIBE {$db_prefix}$tableName $columnName");
+		$check = $smcFunc['db_query']('', "DESCRIBE {db_prefix}$tableName $columnName");
 		$checkval = $smcFunc['db_num_rows']($check);
 		$smcFunc['db_free_result']($check);
 		if ($checkval > 0)
@@ -203,10 +203,10 @@ function checkFieldSB($tableName,$columnName)
 /*  Returns amount of columns in a table  */
 function checkTableSB($tableName)
 {
-	global $db_prefix, $smcFunc;
+	global $smcFunc;
 	$check = false;
 	$checkval = false;
-	$check = $smcFunc['db_query']('', "DESCRIBE {$db_prefix}$tableName");
+	$check = $smcFunc['db_query']('', "DESCRIBE {db_prefix}$tableName");
 	$checkval = $smcFunc['db_num_rows']($check);
 	$smcFunc['db_free_result']($check);
 	if ($checkval > 0) 
@@ -218,10 +218,10 @@ function checkTableSB($tableName)
 /*  Check if table exists  */
 function check_table_existsSB($table)
 {
-	global $db_prefix, $smcFunc;
+	global $smcFunc;
 	$check = false;
 	$checkval = false;
-	$check = $smcFunc['db_query']('', "SHOW TABLES LIKE '{$db_prefix}$table'");
+	$check = $smcFunc['db_query']('', "SHOW TABLES LIKE '{db_prefix}$table'");
 	$checkval = $smcFunc['db_num_rows']($check);
 	$smcFunc['db_free_result']($check);
 	if ($checkval >0)
