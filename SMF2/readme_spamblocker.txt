@@ -1,21 +1,30 @@
 SMF 2.0x - Spam Blocker 
 
-Developed for SMF forums c/o Underdog @ [url=http://askusaquestion.net]askusaquestion.net[/url]
-Copyright 2013 Underdog@askusaquestion.net
+Developed for SMF forums c/o Underdog @ [url=http://webdevelop.comli.com]webdevelop.comli.com[/url]
+Copyright 2013 Underdog@webdevelop.comli.com
 Beta testers: Skhilled & TinMan
 
 Purpose and/or usage of this software package:
 
 The purpose of this anti-spam modification software package is to detect unsolicited web traffic (a.k.a. Spam) and restrict and/or limit its access from registering as users and/or participating on your Simple Machines Forum website.
 
-This software package is distributed under the terms of its [url=http://askusaquestion.net/index.php/page=spamblocker_license]Freeware License[/url] whereas all of its condtional terms are noted within its license link from your SMF Administraion Panel and/or the link provided in this paragraph. If you do not agree to the terms shown in the license, do not download and/or use this software package.  
+This software package is distributed under the terms of its [url=http://webdevelop.comli.com/index.php?page=spamblocker_license]Freeware License[/url] whereas all of its condtional terms are noted within its license link from your SMF Administraion Panel and/or the link provided in this paragraph. If you do not agree to the terms shown in the license, do not download and/or use this software package.  
 
-If you commend this software package and/or any other contributions that [url=http://askusaquestion.net]underdog@askusaquestion.net[/url] develops for the SMF community,
+If you commend this software package and/or any other contributions that underdog@webdevelop.comli.com develops for the SMF community,
 please feel free to make a donation to paypal using the image/link provided below. Thank you for opting to use this software package.
 
 
-[url=http://askusaquestion.net/index.php/page=underdog_donation][img]https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif[/img][/url]
+[url=http://webdevelop.comli.com/index.php?page=underdog_donation][img]https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif[/img][/url]
 
+[hr]
+
+Recommended minimal requirements:
+Server: PHP 5.2+ with libxml, cURL, socket connections & DOM enabled
+        MYSQL 5.0+ using MyISAM or InnoDB engine
+Browser Add-Ons (for admin): Adobe Flashplayer 11.5+, JRE 7.10+, HTML5 capability
+SMF Version: 2.0.4+
+
+[hr] 
 
 Spam Blocker Features:
 
@@ -86,14 +95,6 @@ Changelog:
 + 1 hour cache (ip, time, pass/fail) to limit resource usage
 + License and guide provided on Admin page
 [hr]
-
-Recommended minimal requirements:
-Server: PHP 5.2+ with libxml, cURL, socket connections & DOM enabled
-        MYSQL 5.0+ using MyISAM or InnoDB engine
-Browser Add-Ons (for admin): Adobe Flashplayer 11.5+, JRE 7.10+, HTML5 capability
-SMF Version: 2.0.4+
-
-[hr] 
 
 Disclaimers:
 
