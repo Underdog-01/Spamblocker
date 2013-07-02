@@ -2,15 +2,15 @@
 
 /*
  *	Spam Blocker for SMF - Modification v1.0	 
- *	c/o Underdog @ http://askusaquestion.net	
+ *	c/o Underdog @ http://webdevelop.comli.com	
  *	This file is for the integration hooks		
 */
 
 /*
- * Spam Blocker was developed for SMF forums c/o Underdog @ http://askusaquestion.net	
- * Copyright 2013 Underdog@askusaquestion.net
+ * Spam Blocker was developed for SMF forums c/o Underdog @ http://webdevelop.comli.com	
+ * Copyright 2013 underdog@webdevelop.comli.com
  * This software package is distributed under the terms of its Freeware License
- * http://askusaquestion.net/index.php/page=spamblocker_license
+ * http://webdevelop.comli.com/index.php/page=spamblocker_license
 */
 
 if (!defined('SMF'))
@@ -419,6 +419,9 @@ function spamBlocker_allExpired()
 function spamBlocker_register(&$regOptions, &$theme_vars)
 {
 	global $sourcedir, $user_info, $smcFunc;
+	
+	if (empty($regOptions['username']) || empty($regOptions['email']))
+		return false;
 	
 	require_once($sourcedir.'/SpamBlocker.php');	
 	$regOptions['spamBlocker'] = spamBlockerRegister($smcFunc['strtolower']($regOptions['username']), $regOptions['email'], $user_info['ip'], false);
