@@ -3,15 +3,15 @@
 
 /*
  *	Main admin settings file for the Spam Blocker Mod	
- *	c/o Underdog @ http://askusaquestion.net		  
+ *	c/o Underdog @ http://webdevelop.comli.com		  
  *	SMF 2 Version				
 */
 
 /*
- * Spam Blocker was developed for SMF forums c/o Underdog @ http://askusaquestion.net	
- * Copyright 2013 Underdog@askusaquestion.net
+ * Spam Blocker was developed for SMF forums c/o Underdog @ http://webdevelop.comli.com	
+ * Copyright 2013 underdog@webdevelop.comli.com
  * This software package is distributed under the terms of its Freeware License
- * http://askusaquestion.net/index.php/page=spamblocker_license
+ * http://webdevelop.comli.com/index.php/page=spamblocker_license
 */
 
 if (!defined('SMF')) 
@@ -159,7 +159,7 @@ function spamBlocker()
 
 function SettingsSpamBlocker()
 {
-	global $txt, $scripturl, $context, $smcFunc, $sourcedir, $db_prefix, $modSettings, $settings, $boardurl;
+	global $txt, $scripturl, $context, $smcFunc, $sourcedir, $modSettings, $settings, $boardurl;
 	loadLanguage('SpamBlocker');	
 	
 	if (!AllowedTo('spamBlocker_settings'))
@@ -276,12 +276,12 @@ function SettingsSpamBlocker()
 				continue 2;			
 			case 'banopt':
 				$val = ((int)$value == 1) ? 1 : 0;
-				$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$key} = {int:val}", array('val' => $val));
-				$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET ban_full = 0");
+				$request = $smcFunc['db_query']('', "UPDATE {db_prefix}$tableName SET {$key} = {int:val}", array('val' => $val));
+				$request = $smcFunc['db_query']('', "UPDATE {db_prefix}$tableName SET ban_full = 0");
 				continue 2;
 			case 'enable_int':
 				$val = ($value == 2) ? 1 : 2;
-				$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$key} = {int:val}", array('val' => $val));				
+				$request = $smcFunc['db_query']('', "UPDATE {db_prefix}$tableName SET {$key} = {int:val}", array('val' => $val));				
 				continue 2;
 			case 'general':
 				$val = ($value == 2) ? 1 : 2;
@@ -312,13 +312,13 @@ function SettingsSpamBlocker()
 			case 'exp_time':
 				if ((int)$value < 1)
 				{
-					$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET expire_time = 0");
-					$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET expiration = 0");
+					$request = $smcFunc['db_query']('', "UPDATE {db_prefix}$tableName SET expire_time = 0");
+					$request = $smcFunc['db_query']('', "UPDATE {db_prefix}$tableName SET expiration = 0");
 					continue 2;
 				}
 				$days = (int)$value;
-				$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET expire_time = '{$days}'");
-				$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET expiration = 1");
+				$request = $smcFunc['db_query']('', "UPDATE {db_prefix}$tableName SET expire_time = '{$days}'");
+				$request = $smcFunc['db_query']('', "UPDATE {db_prefix}$tableName SET expiration = 1");
 				continue 2;			
 			case 'del':
 				if ((($value == 2) ? 2 : 1) == 2)
@@ -402,10 +402,10 @@ function SettingsSpamBlocker()
 				$val = ((int)$value == 1) ? 1 : 0;
 				if ($val == 1)
 				{
-					$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET {$key} = {int:val}", array('val' => $val));
-					$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET ban_register = 0");
-					$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET ban_login = 0");
-					$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}$tableName SET ban_post = 0");					
+					$request = $smcFunc['db_query']('', "UPDATE {db_prefix}$tableName SET {$key} = {int:val}", array('val' => $val));
+					$request = $smcFunc['db_query']('', "UPDATE {db_prefix}$tableName SET ban_register = 0");
+					$request = $smcFunc['db_query']('', "UPDATE {db_prefix}$tableName SET ban_login = 0");
+					$request = $smcFunc['db_query']('', "UPDATE {db_prefix}$tableName SET ban_post = 0");					
 				}	
 				continue 2;
 			case 'path':
@@ -704,7 +704,7 @@ function SettingsSpamBlocker()
 
 function WhitelistSpamBlocker()
 {
-	global $txt, $scripturl, $context, $smcFunc, $sourcedir, $db_prefix, $modSettings, $settings;
+	global $txt, $scripturl, $context, $smcFunc, $sourcedir, $modSettings, $settings;
 	loadLanguage('SpamBlocker');	
 	
 	if (!AllowedTo('spamBlocker_settings'))
@@ -838,7 +838,7 @@ function WhitelistSpamBlocker()
 
 function BlacklistSpamBlocker()
 {
-	global $txt, $scripturl, $context, $smcFunc, $sourcedir, $db_prefix, $modSettings, $settings;
+	global $txt, $scripturl, $context, $smcFunc, $sourcedir, $modSettings, $settings;
 	loadLanguage('SpamBlocker');	
 	
 	if (!AllowedTo('spamBlocker_settings'))
