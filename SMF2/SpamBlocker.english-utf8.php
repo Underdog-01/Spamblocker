@@ -1,10 +1,10 @@
 <?php
 // SMF Version: 2.0.4; Spam Blocker
 /*
- * Spam Blocker was developed for SMF forums c/o Underdog @ http://askusaquestion.net 
- * Copyright 2013 underdog@askusaquestion.net
+ * Spam Blocker was developed for SMF forums c/o Underdog @ http://webdevelop.comli.com 
+ * Copyright 2013 underdog@webdevelop.comli.com
  * This software package is distributed under the terms of its Freeware License
- * http://askusaquestion.net/index.php/page=spamblocker_license
+ * http://webdevelop.comli.com/index.php/page=spamblocker_license
 */
 global $helptxt;
 
@@ -138,7 +138,7 @@ $txt['spamBlockerNoSafeText'] = 'Reported Safe';
 $txt['spamBlockerNoSafeDetail'] = 'This post has already been reported as safe';
 $txt['spamBlockerReportMsg'] = 'Message Reporting';
 $txt['spamBlockerReport'] = 'Spam Post Logged';
-$txt['spamBlockerSpamDelete'] = '\r\nThis action will also ban the entity as you have that option enabled.';
+$txt['spamBlockerSpamDelete'] = '\r\nThis action can not be reversed and should only be performed when you are certain that the post contains spam content.';
 
 /* Spam Blocker permission language variables */ 
 $txt['permissiongroup_simple_spamBlocker_perms'] = 'Spam Blocker';
