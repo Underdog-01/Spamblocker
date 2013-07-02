@@ -6,7 +6,7 @@ Anti-spam modification to restrict or limit access
 SMF 2.0x - Spam Blocker 
 
 Developed for SMF forums c/o Underdog @ http://webdevelop.comli.com              
-Copyright 2013 underdog@webdevelop.comli.com
+Copyright 2013 underdog@webdevelop.comli.com                                  
 Beta testers: Skhilled & TinMan
 
 Purpose and/or usage of this software package:
