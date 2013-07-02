@@ -1,7 +1,7 @@
 SMF 2.0x - Spam Blocker
-Developed for SMF forums c/o Underdog @ http://askusaquestion.net 
-Copyright 2013 Underdog@askusaquestion.net
-This software package is distributed under the terms of its [url=http://askusaquestion.net/index.php/page=spamblocker_license]Freeware License[/url]
+Developed for SMF forums c/o Underdog @ http://webdevelop.comli.com
+Copyright 2013 underdog@webdevelop.comli.com
+This software package is distributed under the terms of its [url=http://webdevelop.comli.com/index.php/page=spamblocker_license]Freeware License[/url]
 
 
 
