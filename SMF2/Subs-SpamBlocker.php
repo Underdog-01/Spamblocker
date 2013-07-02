@@ -3,15 +3,15 @@
 
 /*
  *	General Sub-Routines file for the Spam Blocker Mod	
- *	c/o Underdog @ http://askusaquestion.net	  
+ *	c/o Underdog @ http://webdevelop.comli.com	  
  *	SMF 2 Version				
 */
 
 /*
- * Spam Blocker was developed for SMF forums c/o Underdog @ http://askusaquestion.net	
- * Copyright 2013 Underdog@askusaquestion.net
+ * Spam Blocker was developed for SMF forums c/o Underdog @ http://webdevelop.comli.com	
+ * Copyright 2013 underdog@webdevelop.comli.com
  * This software package is distributed under the terms of its Freeware License
- * http://askusaquestion.net/index.php/page=spamblocker_license
+ * http://webdevelop.comli.com/index.php/page=spamblocker_license
 */
 
 if (!defined('SMF'))
@@ -232,8 +232,7 @@ function spamBlockerMemberDelete($member_id = 0)
 	global $smcFunc, $sourcedir;
 		
 	require_once($sourcedir . '/PersonalMessage.php');
-	require_once($sourcedir . '/ManageAttachments.php');
-	require_once($sourcedir . '/Subs.php');	
+	require_once($sourcedir . '/ManageAttachments.php');	
 	
 	/* Protect admins from deletion (just to be safe) */
 	$request = $smcFunc['db_query']('', '
@@ -681,12 +680,12 @@ function spamBlockerReportPost()
 
 function spamBlockerPostFilter($text)
 {
-	global $txt, $modSettings, $user_info;
+	global $txt, $modSettings, $user_info, $smcFunc;
 	$defaults = array(array(), array(), array(), array(), 0, 0, 0, 0, false, false, false);
 	list($links, $images, $plainText, $count, $chars, $low_chars, $strLength, $counter, $linkz, $imagez, $lastText) = $defaults;	
 	$enableFilter = !empty($modSettings['spamBlocker_PostFilter']) ? (int)$modSettings['spamBlocker_PostFilter'] : 2;
 	$maxPostcount = !empty($modSettings['spamBlocker_postCount']) ? $modSettings['spamBlocker_postCount'] : -1;
-	$filteringText = !empty($modSettings['spamBlocker_filteredText']) ? mb_strtolower($modSettings['spamBlocker_filteredText'], "UTF-8") : mb_strtolower($txt['spamBlocker_textFilter'], "UTF-8");
+	$filteringText = !empty($modSettings['spamBlocker_filteredText']) ? $smcFunc['strtolower']($modSettings['spamBlocker_filteredText'], "UTF-8") : $smcFunc['strtolower']($txt['spamBlocker_textFilter'], "UTF-8");
 
 	if ($enableFilter != 1 || AllowedTo('spamBlocker_settings'))
 		return array('words' => 0, 'links' => 0, 'images' => 0, 'chars' => 0, 'low_chars' => 0);	
@@ -698,8 +697,8 @@ function spamBlockerPostFilter($text)
 	$dom->loadHTML($text);
 	libxml_use_internal_errors(false);	
 		
-	$plainText = str_word_count(trim(mb_strtolower($dom->textContent), 'UTF-8'), 1);
-	$strLength = strlen(mb_strtolower(trim($dom->textContent), 'UTF-8'));	
+	$plainText = str_word_count(trim($smcFunc['strtolower']($dom->textContent), 'UTF-8'), 1);
+	$strLength = strlen($smcFunc['strtolower'](trim($dom->textContent), 'UTF-8'));	
 	$textFilter = str_word_count(trim($filteringText), 1);
 	$count = array_intersect($textFilter, $plainText);
 	
