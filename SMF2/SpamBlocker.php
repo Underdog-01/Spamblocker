@@ -3,15 +3,15 @@
 
 /*
  *	General Functions file for the Spam Blocker Mod		
- *	c/o Underdog @ http://askusaquestion.net	  
+ *	c/o Underdog @ http://webdevelop.comli.com	  
  *	SMF 2 Version				
 */
 
 /*
- * Spam Blocker was developed for SMF forums c/o Underdog @ http://askusaquestion.net	
- * Copyright 2013 Underdog@askusaquestion.net
+ * Spam Blocker was developed for SMF forums c/o Underdog @ http://webdevelop.comli.com	
+ * Copyright 2013 underdog@webdevelop.comli.com
  * This software package is distributed under the terms of its Freeware License
- * http://askusaquestion.net/index.php/page=spamblocker_license
+ * http://webdevelop.comli.com/index.php/page=spamblocker_license
 */
 
 if (!defined('SMF'))
@@ -37,7 +37,7 @@ if (!defined('SMF'))
 	
 function spamBlockerRegister($name, $email, $ipUser, $data)
 {
-	global $smcFunc, $sourcedir, $user_info, $db_name, $db_prefix, $db_type, $txt, $context, $modSettings, $settings, $cookiename, $scripturl;	
+	global $smcFunc, $sourcedir, $user_info, $db_name, $db_type, $txt, $context, $modSettings, $settings, $cookiename, $scripturl;	
 	loadLanguage('SpamBlocker');
 	
 	/* Sanitize the inputs prior to processing */
@@ -49,8 +49,7 @@ function spamBlockerRegister($name, $email, $ipUser, $data)
 	require_once($sourcedir . '/ManageServer.php');
 	require_once($sourcedir . '/LogInOut.php');
 	require_once($sourcedir . '/Subs-Auth.php');
-	require_once($sourcedir . '/Subs-SpamBlocker.php');
-	require_once($sourcedir . '/Subs.php');
+	require_once($sourcedir . '/Subs-SpamBlocker.php');	
 	
 	/* Check the whitelist && 24 hour cache ... */
 	$checkCache = IPspamBlockerCache(trim($ipUser));
@@ -142,7 +141,7 @@ function spamBlockerRegister($name, $email, $ipUser, $data)
 				
 				/* Do not change the spamBlocker_id- for notes ... this mod needs this for referencing */
 				$notes = 'spamBlocker_id-' . (int)$key;
-				$request = $smcFunc['db_query']('', "UPDATE {$db_prefix}ban_groups SET notes = {string:notes} WHERE id_ban_group = {int:key}", array('notes' => $notes, 'key' => (int)$key));
+				$request = $smcFunc['db_query']('', "UPDATE {db_prefix}ban_groups SET notes = {string:notes} WHERE id_ban_group = {int:key}", array('notes' => $notes, 'key' => (int)$key));
 			}
 			/* Do not change the spamBlocker_id- for notes ... this mod needs this for referencing */
 			else
