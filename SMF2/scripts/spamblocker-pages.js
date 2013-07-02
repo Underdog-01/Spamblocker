@@ -1,10 +1,10 @@
 /*
  * Pagination javascript file for Spamblocker 
- * Spam Blocker was developed for SMF forums c/o Underdog @ http://askusaquestion.net 
- * Developed for SMF forums c/o Underdog @ http://askusaquestion.net				
- * Copyright 2013 Underdog@askusaquestion.net
-*/ 
-
+ * Spam Blocker was developed for SMF forums c/o Underdog @ http://webdevelop.comli.com	
+ * Copyright 2013 underdog@webdevelop.comli.com
+ * This software package is distributed under the terms of its Freeware License
+ * http://webdevelop.comli.com/index.php/page=spamblocker_license
+*/
 function Pager(tableName, itemsPerPage) {
     this.tableName = tableName;
     this.itemsPerPage = itemsPerPage;
