@@ -37,7 +37,7 @@ if (!defined('SMF'))
 	
 function spamBlockerRegister($name, $email, $ipUser, $data)
 {
-	global $smcFunc, $sourcedir, $user_info, $db_name, $db_type, $txt, $context, $modSettings, $settings, $cookiename, $scripturl;	
+	global $smcFunc, $language, $sourcedir, $user_info, $db_name, $db_type, $txt, $context, $modSettings, $settings, $cookiename, $scripturl;	
 	loadLanguage('SpamBlocker');
 	
 	/* Sanitize the inputs prior to processing */
@@ -218,7 +218,7 @@ function spamBlockerRegister($name, $email, $ipUser, $data)
 				'is_admin' => false,
 				'is_mod' => false,
 				'can_mod' => false,
-				'language' => end(explode('/',$settings['lang_images_url'])),
+				'language' => !empty($language) ? $language : 'english',
 			);		
 				
 			$_GET['action'] = '';
